@@ -31,7 +31,7 @@
   create_atoms     1 box
 
   # Interatomic potential information.
-  pair_style       sw
+  pair_style       lj/cut 1.4
   pair_coeff       * * mW.sw mW
   neigh_modify     delay 0
   mass             1 864
