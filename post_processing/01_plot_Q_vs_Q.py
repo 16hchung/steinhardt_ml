@@ -5,16 +5,17 @@ from auxiliary import *
 import matplotlib.pyplot as plt                 
 from numpy import *
 c = ['#E41A1C', '#377EB8', '#4DAF4A', '#FF7F00', '#FFFF33', '#A65628', '#F781BF', '#999999']
-
+Q_names = ['fcc','bcc','hcp','liq']
+Q_path = '../data/from_sim/{}_steinhardt.dat'
 
 ################################################################################
 # Load and process data.                                                       #
 ################################################################################
 
-dr_oct = loadtxt('../data/random_structures/dr_0.dat')
-dr_tet = loadtxt('../data/random_structures/dr_1.dat')
-dr_tri = loadtxt('../data/random_structures/dr_2.dat')
-dr_sqr = loadtxt('../data/random_structures/dr_3.dat')
+#dr_oct = loadtxt('../data/random_structures/dr_0.dat')
+#dr_tet = loadtxt('../data/random_structures/dr_1.dat')
+#dr_tri = loadtxt('../data/random_structures/dr_2.dat')
+#dr_sqr = loadtxt('../data/random_structures/dr_3.dat')
 
 # Panel parameters.
 N = 10
@@ -36,8 +37,8 @@ ax  = fig.add_axes([0.11,0.15,0.8,0.8])
 # Plot.
 for l in range(N):
   plt.axhline(y=l+1, ls='--', c='k', lw=0.5)
-  for y in range(4):
-    Q = loadtxt('../data/random_structures/Q_%d.dat' % y)
+  for y, Q_name in enumerate(Q_names):
+    Q = loadtxt(Q_path.format(Q_name))
     ax.plot(Q[:,l], (l+1)*ones(Q.shape[0]), marker[y], c=c[y], ms=6, alpha=0.5)
     ax.plot(Q0[y,l], (l+1), marker[y], c='k', ms=6)
 
@@ -59,8 +60,8 @@ fig = plt.figure()
 ax  = fig.add_axes([0.12,0.15,0.8,0.8])
 
 # Plot.
-for y in range(4):
-  Q = loadtxt('../data/random_structures/Q_%d.dat' % y)
+for y, Q_name in enumerate(Q_names):
+  Q = loadtxt(Q_path.format(Q_name))
   ax.plot(Q[:,3], Q[:,5], marker[y], c=c[y], ms=7, alpha=0.5)
   ax.plot(Q0[y,3], Q0[y,5], marker[y], c='k', ms=7)
 
@@ -80,8 +81,8 @@ fig = plt.figure(figsize=(15,15))
 for li in range(N):
   for lj in range(N):
     ax  = fig.add_axes([dL0_x+li*L, dL0_y+lj*L, dL, dL])
-    for y in range(4):
-      Q = loadtxt('../data/random_structures/Q_%d.dat' % y)
+    for y, Q_name in enumerate(Q_names):
+      Q = loadtxt(Q_path.format(Q_name))
       ax.plot(Q[:,li], Q[:,lj], marker[y], c=c[y], ms=6)
       ax.plot(Q0[y,li], Q0[y,lj], marker[y], c='k', ms=6)
     ax.set_xticklabels([])

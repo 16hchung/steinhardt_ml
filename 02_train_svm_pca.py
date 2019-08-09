@@ -12,20 +12,20 @@ from sklearn.utils import shuffle
 ################################################################################
 
 # Load features.
-X_oct = loadtxt('data/random_structures/Q_0.dat')
-X_tet = loadtxt('data/random_structures/Q_1.dat')
-X_tri = loadtxt('data/random_structures/Q_2.dat')
-X_sqr = loadtxt('data/random_structures/Q_3.dat')
+X_fcc = loadtxt('data/from_sim/fcc_steinhardt.dat')
+X_bcc = loadtxt('data/from_sim/bcc_steinhardt.dat')
+X_hcp = loadtxt('data/from_sim/hcp_steinhardt.dat')
+X_liq = loadtxt('data/from_sim/liq_steinhardt.dat')
 
 # Create labels.
-y_oct = 0*ones(X_oct.shape[0],dtype=int)
-y_tet = 1*ones(X_tet.shape[0],dtype=int)
-y_tri = 2*ones(X_tri.shape[0],dtype=int)
-y_sqr = 3*ones(X_sqr.shape[0],dtype=int)
+y_fcc = 0*ones(X_fcc.shape[0],dtype=int)
+y_bcc = 1*ones(X_bcc.shape[0],dtype=int)
+y_hcp = 2*ones(X_hcp.shape[0],dtype=int)
+y_liq = 3*ones(X_liq.shape[0],dtype=int)
 
 # Concatenate features and labels. 
-X = row_stack((X_oct,X_tet,X_tri,X_sqr))
-y = array(concatenate((y_oct,y_tet,y_tri,y_sqr)), dtype=int)
+X = row_stack((X_fcc,X_bcc,X_hcp,X_liq))
+y = array(concatenate((y_fcc,y_bcc,y_hcp,y_liq)), dtype=int)
 
 # Scale and shuffle features.
 scaler = StandardScaler().fit(X)
@@ -33,7 +33,7 @@ X = scaler.transform(X)
 X,y = shuffle(X,y)
 
 # Train SVM classifier.
-clf = LinearSVC(C=1.0)
+clf = LinearSVC(C=1.0, max_iter=2000)
 clf.fit(X,y)
 
 # Save data used to train scaler and SVM. Also saves the classifiers.
@@ -46,8 +46,7 @@ joblib.dump(clf,'data/classifiers/svm.pkl')
 # Train PCA.
 ################################################################################
 
-for y in range(4):
-  X = loadtxt('data/random_structures/Q_%d.dat' % y)
+for y, X in enumerate([X_fcc, X_bcc, X_hcp, X_liq]):
   X = scaler.transform(X)
   pca = PCA().fit(X)
   d = zeros(X.shape[0])
