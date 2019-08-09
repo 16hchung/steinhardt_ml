@@ -27,18 +27,27 @@ y_liq = 3*ones(X_liq.shape[0],dtype=int)
 X = row_stack((X_fcc,X_bcc,X_hcp,X_liq))
 y = array(concatenate((y_fcc,y_bcc,y_hcp,y_liq)), dtype=int)
 
-# Scale and shuffle features.
-scaler = StandardScaler().fit(X)
-X = scaler.transform(X)
+n = len(y)
+partition = int(n * .8)
 X,y = shuffle(X,y)
+X_train = X[:partition][:]
+y_train = y[:partition]
+X_val = X[partition:][:]
+y_val = y[partition:]
+
+# Scale and shuffle features.
+scaler = StandardScaler().fit(X_train)
+X_train = scaler.transform(X_train)
+X_val = scaler.transform(X_val)
 
 # Train SVM classifier.
 clf = LinearSVC(C=1.0, max_iter=2000)
-clf.fit(X,y)
-
+clf.fit(X_train, y_train)
+print("score on val set: ", clf.score(X_val, y_val))
+ 
 # Save data used to train scaler and SVM. Also saves the classifiers.
-savetxt('data/classifiers/y.dat',y)
-savetxt('data/classifiers/X.dat',X)
+savetxt('data/classifiers/y.dat',y_train)
+savetxt('data/classifiers/X.dat',X_train)
 joblib.dump(scaler,'data/classifiers/scaler.pkl')
 joblib.dump(clf,'data/classifiers/svm.pkl')
 
@@ -46,16 +55,16 @@ joblib.dump(clf,'data/classifiers/svm.pkl')
 # Train PCA.
 ################################################################################
 
-for y, X in enumerate([X_fcc, X_bcc, X_hcp, X_liq]):
-  X = scaler.transform(X)
-  pca = PCA().fit(X)
-  d = zeros(X.shape[0])
-  for n in range(X.shape[0]):
-    d[n] = distortion(X[n],y,pca,scaler)
-  X = pca.transform(X)
-  savetxt('data/distortion_pca/pca_%d.dat' % y, X)
-  savetxt('data/distortion_pca/d_%d.dat' % y, d)
-  savetxt('data/distortion_pca/pca0_%d.dat' % y, pca.transform(scaler.transform(Q0[y].reshape(1,-1))))
-  joblib.dump(pca,'data/classifiers/pca_%d.pkl' % y)
+#for y, X in enumerate([X_fcc, X_bcc, X_hcp, X_liq]):
+#  X = scaler.transform(X)
+#  pca = PCA().fit(X)
+#  d = zeros(X.shape[0])
+#  for n in range(X.shape[0]):
+#    d[n] = distortion(X[n],y,pca,scaler)
+#  X = pca.transform(X)
+#  savetxt('data/distortion_pca/pca_%d.dat' % y, X)
+#  savetxt('data/distortion_pca/d_%d.dat' % y, d)
+#  savetxt('data/distortion_pca/pca0_%d.dat' % y, pca.transform(scaler.transform(Q0[y].reshape(1,-1))))
+#  joblib.dump(pca,'data/classifiers/pca_%d.pkl' % y)
 
 ################################################################################
