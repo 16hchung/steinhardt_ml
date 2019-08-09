@@ -1,7 +1,8 @@
 from auxiliary import *
+from softmax import Softmax
 
 from numpy import *
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC, SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.externals import joblib
 from sklearn.decomposition import PCA
@@ -43,8 +44,19 @@ X_val = scaler.transform(X_val)
 # Train SVM classifier.
 clf = LinearSVC(C=1.0, max_iter=2000)
 clf.fit(X_train, y_train)
-print("score on val set: ", clf.score(X_val, y_val))
+print("linear score on val set: ", clf.score(X_val, y_val))
  
+# Nonlinear SVM
+clf2 = SVC(C=1.0, max_iter=1000)
+clf2.fit(X_train, y_train)
+print("kernelized score on val set: ", clf2.score(X_val, y_val))
+
+# Softmax
+clf3 = Softmax()
+clf3.train(X_train, y_train)
+y_pred = clf3.predict(X_val)
+print("softmax score on val set: ", mean(equal(y_val, y_pred)))
+
 # Save data used to train scaler and SVM. Also saves the classifiers.
 savetxt('data/classifiers/y.dat',y_train)
 savetxt('data/classifiers/X.dat',X_train)
