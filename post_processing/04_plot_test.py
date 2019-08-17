@@ -21,7 +21,7 @@ ax  = fig.add_axes([0.14, 0.12, 0.85, 0.85])
 # Plot
 y, dr, d = loadtxt('../data/test/distortion.dat', unpack=True)
 for i in range(len(marker)):
-  ax.plot(d[y==i], dr[y==i], marker[i], c=c[i], alpha=0.4)
+  ax.plot(d[y==i], dr[y==i], marker[i], c=c[i], alpha=0.4, ms=2)
    
 # Add details and save figure.
 ax.set_xlim(0,13)

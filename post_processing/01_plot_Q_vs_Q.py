@@ -39,7 +39,7 @@ for l in range(N):
   plt.axhline(y=l+1, ls='--', c='k', lw=0.5)
   for y, Q_name in enumerate(Q_names):
     Q = loadtxt(Q_path.format(Q_name))
-    ax.plot(Q[:,l], (l+1)*ones(Q.shape[0]), marker[y], c=c[y], ms=6, alpha=0.5)
+    ax.plot(Q[:,l], (l+1)*ones(Q.shape[0]), marker[y], c=c[y], ms=2, alpha=0.5)
 #    ax.plot(Q0[y,l], (l+1), marker[y], c='k', ms=6)
 
 # Add details.
@@ -62,7 +62,7 @@ ax  = fig.add_axes([0.12,0.15,0.8,0.8])
 # Plot.
 for y, Q_name in enumerate(Q_names):
   Q = loadtxt(Q_path.format(Q_name))
-  ax.plot(Q[:,3], Q[:,5], marker[y], c=c[y], ms=7, alpha=0.5)
+  ax.plot(Q[:,3], Q[:,5], marker[y], c=c[y], ms=2, alpha=0.5)
 #  ax.plot(Q0[y,3], Q0[y,5], marker[y], c='k', ms=7)
 
 # Add details.
@@ -83,7 +83,7 @@ for li in range(N):
     ax  = fig.add_axes([dL0_x+li*L, dL0_y+lj*L, dL, dL])
     for y, Q_name in enumerate(Q_names):
       Q = loadtxt(Q_path.format(Q_name))
-      ax.plot(Q[:,li], Q[:,lj], marker[y], c=c[y], ms=6)
+      ax.plot(Q[:,li], Q[:,lj], marker[y], c=c[y], ms=2)
 #      ax.plot(Q0[y,li], Q0[y,lj], marker[y], c='k', ms=6)
     ax.set_xticklabels([])
     ax.set_yticklabels([])

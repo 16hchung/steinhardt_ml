@@ -24,7 +24,7 @@ plt.axvline(ls='--', c='k', lw=0.5)
 
 # Plot.
 for i in range(4):
-  ax.plot(X_pca[y==i,0], X_pca[y==i,1], marker[i], c=c[i], ms=6, alpha=0.5)
+  ax.plot(X_pca[y==i,0], X_pca[y==i,1], marker[i], c=c[i], ms=2, alpha=0.5)
   #ax.plot(X0_pca[i,0], X0_pca[i,1], marker[i], c='k', ms=6)
  
 # Add details and save figure.
@@ -43,7 +43,7 @@ for perplexity in [10,20,50,100]:
   fig = plt.figure()
   ax  = fig.add_axes([0.05, 0.05, 0.90, 0.90])
   for i in range(4):
-    ax.plot(X_tsne[y==i,0], X_tsne[y==i,1], marker[i], c=c[i], ms=6)
+    ax.plot(X_tsne[y==i,0], X_tsne[y==i,1], marker[i], c=c[i], ms=2)
   ax.set_xticks([])
   ax.set_yticks([])
   fig.savefig("figures/visualization/fig_tSNE_%d.png" % perplexity, dpi=300)
