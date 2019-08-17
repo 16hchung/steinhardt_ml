@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #rm data/*/*
-rm post_processing/figures/*/*
-rm post_processing/figures/*
+#rm post_processing/figures/*/*
+#rm post_processing/figures/*
 
 #python3 01_create_data.py
 python3 02_train_svm_pca.py

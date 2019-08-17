@@ -45,10 +45,10 @@ l = arange(1,10+1)
 ################################################################################
 
 structures = [
-  ('bcc','lammps_scripts/02_crystals/data/dump_bcc_10000.dat'),
-  ('fcc','lammps_scripts/02_crystals/data/dump_fcc_10000.dat'),
-  ('hcp','lammps_scripts/02_crystals/data/dump_hcp_10000.dat'),
-  ('liq','lammps_scripts/03_liquid/data/dump_liquid_10000.dat')
+  ('bcc','lammps_scripts/02_crystals/data/dump_bcc_20000.dat'),
+  ('fcc','lammps_scripts/02_crystals/data/dump_fcc_20000.dat'),
+  ('hcp','lammps_scripts/02_crystals/data/dump_hcp_20000.dat'),
+  ('liq','lammps_scripts/03_liquid/data/dump_liquid_20000.dat')
 ]
 
 output_dir = 'data/from_sim'

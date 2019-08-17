@@ -8,7 +8,7 @@ c = ['#E41A1C', '#377EB8', '#4DAF4A', '#FF7F00', '#FFFF33', '#A65628', '#F781BF'
 
 y = loadtxt('../data/classifiers/y.dat')
 X_pca = loadtxt('../data/tsne_pca/pca.dat')
-X0_pca = loadtxt('../data/tsne_pca/pca0.dat')
+#X0_pca = loadtxt('../data/tsne_pca/pca0.dat')
 
 marker = ['8','D', '^', 's']
 
@@ -25,7 +25,7 @@ plt.axvline(ls='--', c='k', lw=0.5)
 # Plot.
 for i in range(4):
   ax.plot(X_pca[y==i,0], X_pca[y==i,1], marker[i], c=c[i], ms=6, alpha=0.5)
-  ax.plot(X0_pca[i,0], X0_pca[i,1], marker[i], c='k', ms=6)
+  #ax.plot(X0_pca[i,0], X0_pca[i,1], marker[i], c='k', ms=6)
  
 # Add details and save figure.
 ax.set_xlabel(r'PCA 1')
