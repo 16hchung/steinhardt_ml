@@ -59,6 +59,9 @@ plt.close()
 fig = plt.figure()
 ax  = fig.add_axes([0.12,0.15,0.8,0.8])
 
+ax.set_xlim(left=0, right=.3, emit=False)
+ax.set_ylim(bottom=0, top=.6, emit=False)
+
 # Plot.
 for y, Q_name in enumerate(Q_names):
   Q = loadtxt(Q_path.format(Q_name))
@@ -83,7 +86,7 @@ for li in range(N):
     ax  = fig.add_axes([dL0_x+li*L, dL0_y+lj*L, dL, dL])
     for y, Q_name in enumerate(Q_names):
       Q = loadtxt(Q_path.format(Q_name))
-      ax.plot(Q[:,li], Q[:,lj], marker[y], c=c[y], ms=2)
+      ax.plot(Q[:,li], Q[:,lj], marker[y], c=c[y], ms=2, alpha=.5)
 #      ax.plot(Q0[y,li], Q0[y,lj], marker[y], c='k', ms=6)
     ax.set_xticklabels([])
     ax.set_yticklabels([])
