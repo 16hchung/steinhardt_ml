@@ -45,19 +45,13 @@ N_stein = len(l)
 ################################################################################
 # Compute steinhardt at each timestep.                                         #
 ################################################################################
+import constants
+structures = constants.structures
+output_dir = constants.steinhardt_dir
 
-structures = [
-  ('bcc','lammps_scripts/02_crystals/data/dump_bcc_{}.dat'),
-  ('fcc','lammps_scripts/02_crystals/data/dump_fcc_{}.dat'),
-  ('hcp','lammps_scripts/02_crystals/data/dump_hcp_{}.dat'),
-  ('liq','lammps_scripts/03_liquid/data/dump_liquid_{}.dat')
-]
+train_ts_range = constants.train_ts_range
+test_ts = constants.test_ts
 
-ts_scale = 1000
-train_ts_range = (10,20)
-test_ts = 20
-
-output_dir = 'data/from_sim'
 if not os.path.exists(output_dir):
   os.makedirs(output_dir)
 
@@ -82,21 +76,20 @@ def balance_classes(all_data):
 def save_to_files(all_data, suffix):
     for struct_type,X in all_data.items():
         # Save features and labels.
-        savetxt('{}/{}_steinhardt_{}.dat'.format(output_dir, struct_type, suffix),
+        savetxt(constants.steinhardt_fname_tmpl.format(output_dir, struct_type, suffix),
             X, fmt='%.7e '*N_stein, header=" stein(%d)" % N_stein
         )
 
 # compute steinhardt for all train data (all timesteps except one)
-all_data = {s:zeros((0,N_stein)) for [s,fname] in structures}
+all_data = {s:zeros((0,N_stein)) for [s,fname,_] in structures}
 for ts in range(*train_ts_range):
-  ts = ts_scale * ts
   comp_stein_for_all_structures(all_data, ts)
 all_data = balance_classes(all_data)
 save_to_files(all_data, 'train')
 
 # compute steinhardt for validation set
-all_data = {s:zeros((0,N_stein)) for [s,fname] in structures}
-comp_stein_for_all_structures(all_data, test_ts * ts_scale)
+all_data = {s:zeros((0,N_stein)) for [s,fname,_] in structures}
+comp_stein_for_all_structures(all_data, test_ts)
 save_to_files(all_data, 'val')
 
 ################################################################################
