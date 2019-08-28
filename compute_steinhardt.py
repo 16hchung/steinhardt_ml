@@ -3,6 +3,7 @@ from numpy import *
 from scipy.stats import norm
 from ovito.io import *
 from ovito.data import *
+from sklearn.utils import shuffle
 
 from auxiliary import steinhardt
 
@@ -39,35 +40,63 @@ def compute_steinhardt(data,r_cut,l):
 
 r_cut = 1.4 #no unit conversion okay?
 l = arange(1,10+1)
+N_stein = len(l)
 
 ################################################################################
 # Compute steinhardt at each timestep.                                         #
 ################################################################################
 
 structures = [
-  ('bcc','lammps_scripts/02_crystals/data/dump_bcc_20000.dat'),
-  ('fcc','lammps_scripts/02_crystals/data/dump_fcc_20000.dat'),
-  ('hcp','lammps_scripts/02_crystals/data/dump_hcp_20000.dat'),
-  ('liq','lammps_scripts/03_liquid/data/dump_liquid_20000.dat')
+  ('bcc','lammps_scripts/02_crystals/data/dump_bcc_{}.dat'),
+  ('fcc','lammps_scripts/02_crystals/data/dump_fcc_{}.dat'),
+  ('hcp','lammps_scripts/02_crystals/data/dump_hcp_{}.dat'),
+  ('liq','lammps_scripts/03_liquid/data/dump_liquid_{}.dat')
 ]
+
+ts_scale = 1000
+train_ts_range = (10,20)
+test_ts = 20
 
 output_dir = 'data/from_sim'
 if not os.path.exists(output_dir):
   os.makedirs(output_dir)
 
-for structure in structures:
-  struct_type = structure[0]
-  infile = structure[1]
+def comp_stein_for_all_structures(all_data, ts):
+    for structure in structures:
+        struct_type = structure[0]
+        infile = structure[1].format(ts)
+      
+        # Compute steinhardt
+        pipeline = import_file(infile)
+        data = pipeline.compute()
+        X = compute_steinhardt(data,r_cut,l)
 
-  # Compute rsf.
-  pipeline = import_file(infile)
-  data = pipeline.compute()
-  X = compute_steinhardt(data,r_cut,l)
+        all_data[struct_type] = vstack((all_data[struct_type], X))
 
-  # Save features and labels.
-  N_stein = len(X[0,:])
-  savetxt('{}/{}_steinhardt.dat'.format(output_dir, struct_type),
-          X, fmt='%.7e '*N_stein, header=" stein(%d)" % N_stein
-  )
+def balance_classes(all_data):
+    # Once we've computed steinhardt for all structures, find struct with min data points 
+    # and truncate everything else to balance classes
+    min_len = min(data.shape[0] for _,data in all_data.items())
+    return {s:shuffle(data)[:min_len,:] for s,data in all_data.items()}
+
+def save_to_files(all_data, suffix):
+    for struct_type,X in all_data.items():
+        # Save features and labels.
+        savetxt('{}/{}_steinhardt_{}.dat'.format(output_dir, struct_type, suffix),
+            X, fmt='%.7e '*N_stein, header=" stein(%d)" % N_stein
+        )
+
+# compute steinhardt for all train data (all timesteps except one)
+all_data = {s:zeros((0,N_stein)) for [s,fname] in structures}
+for ts in range(*train_ts_range):
+  ts = ts_scale * ts
+  comp_stein_for_all_structures(all_data, ts)
+all_data = balance_classes(all_data)
+save_to_files(all_data, 'train')
+
+# compute steinhardt for validation set
+all_data = {s:zeros((0,N_stein)) for [s,fname] in structures}
+comp_stein_for_all_structures(all_data, test_ts * ts_scale)
+save_to_files(all_data, 'val')
 
 ################################################################################
