@@ -51,12 +51,13 @@ def plot_curve(curve_fxn, extra_curve_args, model, title, xlabel, ylabel, fname,
 X,y = get_train_steins()
 
 # plot validation curve
-param_range = [.01, .05, .1, .5, 1, 5, 10, 50, 100, 500]
+param_range = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 extra_args = {'param_range':param_range, 'param_name':'clf__C'}
 plot_curve(
     validation_curve, extra_args, SVC(), 
-    'Validation curve', 'C', 'accuracy', 'kernel_svm_val_curve.png', 
+    'Validation curve', 'C', 'accuracy', 'kernel_svm_val_curve_finer.png', 
     X, y, 
     0, 1, param_range
 )
 
+# plot learning curve
