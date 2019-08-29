@@ -2,6 +2,7 @@ from sklearn.svm import SVC
 from sklearn.model_selection import learning_curve, validation_curve
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.utils import shuffle
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -19,7 +20,6 @@ def plot_curve(curve_fxn, extra_curve_args, model, title, xlabel, ylabel, fname,
         ('scale', StandardScaler()),
         ('clf', model)
     ])
-    #import pdb;pdb.set_trace()
 
     result = curve_fxn(pipe, X, y, cv=5, n_jobs=1, scoring='accuracy', **extra_curve_args)
 
@@ -33,7 +33,6 @@ def plot_curve(curve_fxn, extra_curve_args, model, title, xlabel, ylabel, fname,
     test_scores_mean = np.mean(test_scores, axis=1)
     test_scores_std = np.std(test_scores, axis=1)
     plt.grid()
-    print(test_scores_mean)
     plt.fill_between(xvals, train_scores_mean - train_scores_std,
                      train_scores_mean + train_scores_std, alpha=0.2,
                      color="r")
@@ -44,12 +43,14 @@ def plot_curve(curve_fxn, extra_curve_args, model, title, xlabel, ylabel, fname,
            label="Training score")
     plt.plot(xvals, test_scores_mean, 'o-', color="g",
            label="Cross-validation score")
+    for a,b in zip(xvals, test_scores_mean):
+        plt.text(a,b,str(b))
     plt.legend(loc='best')
     plt.savefig(fname)
     plt.clf()
 
 X,y = get_train_steins()
-
+X,y = shuffle(X,y)
 # plot validation curve
 param_range = [10,20,30,40,50]
 extra_args = {'param_range':param_range, 'param_name':'clf__C'}
@@ -61,3 +62,21 @@ plot_curve(
 )
 
 # plot learning curve
+optimal_C=30
+plot_curve(
+    learning_curve, {}, SVC(C=optimal_C), 
+    'Learning curve', 'training size', 'accuracy', 'kernel_svc_learning_curve.png', 
+    X, y, 
+    1, 2, 0
+)
+
+
+
+
+
+
+
+
+
+
+
