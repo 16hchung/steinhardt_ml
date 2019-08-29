@@ -51,12 +51,14 @@ def plot_curve(curve_fxn, extra_curve_args, model, title, xlabel, ylabel, fname,
 
 X,y = get_train_steins()
 X,y = shuffle(X,y)
+plot_dir = 'post_processing/figures/tuning_curves/'
 # plot validation curve
 param_range = [10,20,30,40,50]
 extra_args = {'param_range':param_range, 'param_name':'clf__C'}
 plot_curve(
     validation_curve, extra_args, SVC(), 
-    'Validation curve', 'C', 'accuracy', 'kernel_svm_val_curve_finer.png', 
+    'Validation curve', 'C', 'accuracy', 
+    plot_dir+'kernel_svm_val_curve_finer.png', 
     X, y, 
     0, 1, param_range
 )
@@ -65,7 +67,8 @@ plot_curve(
 optimal_C=30
 plot_curve(
     learning_curve, {}, SVC(C=optimal_C), 
-    'Learning curve', 'training size', 'accuracy', 'kernel_svm_learning_curve.png', 
+    'Learning curve', 'training size', 'accuracy', 
+    plot_dir+'kernel_svm_learning_curve.png', 
     X, y, 
     1, 2, 0
 )
