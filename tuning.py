@@ -51,7 +51,7 @@ def plot_curve(curve_fxn, extra_curve_args, model, title, xlabel, ylabel, fname,
 X,y = get_train_steins()
 
 # plot validation curve
-param_range = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+param_range = [.5, 1, 3, 6, 10, 20]
 extra_args = {'param_range':param_range, 'param_name':'clf__C'}
 plot_curve(
     validation_curve, extra_args, SVC(), 
