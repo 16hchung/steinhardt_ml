@@ -33,7 +33,7 @@ def plot_curve(curve_fxn, extra_curve_args, model, title, xlabel, ylabel, fname,
     test_scores_mean = np.mean(test_scores, axis=1)
     test_scores_std = np.std(test_scores, axis=1)
     plt.grid()
-
+    print(test_scores_mean)
     plt.fill_between(xvals, train_scores_mean - train_scores_std,
                      train_scores_mean + train_scores_std, alpha=0.2,
                      color="r")
@@ -51,7 +51,7 @@ def plot_curve(curve_fxn, extra_curve_args, model, title, xlabel, ylabel, fname,
 X,y = get_train_steins()
 
 # plot validation curve
-param_range = [.5, 1, 3, 6, 10, 20]
+param_range = [10,20,30,40,50]
 extra_args = {'param_range':param_range, 'param_name':'clf__C'}
 plot_curve(
     validation_curve, extra_args, SVC(), 
