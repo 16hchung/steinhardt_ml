@@ -44,7 +44,7 @@ def plot_curve(curve_fxn, extra_curve_args, model, title, xlabel, ylabel, fname,
     plt.plot(xvals, test_scores_mean, 'o-', color="g",
            label="Cross-validation score")
     for a,b in zip(xvals, test_scores_mean):
-        plt.text(a,b,str(b))
+        plt.text(a,b,'%.3f' % b)
     plt.legend(loc='best')
     plt.savefig(fname)
     plt.clf()
@@ -65,7 +65,7 @@ plot_curve(
 optimal_C=30
 plot_curve(
     learning_curve, {}, SVC(C=optimal_C), 
-    'Learning curve', 'training size', 'accuracy', 'kernel_svc_learning_curve.png', 
+    'Learning curve', 'training size', 'accuracy', 'kernel_svm_learning_curve.png', 
     X, y, 
     1, 2, 0
 )
