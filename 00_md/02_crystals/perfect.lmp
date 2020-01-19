@@ -1,0 +1,24 @@
+#--------------------------- Simulation variables -----------------------------#
+  variable         rho    equal 1.05   # Initial density.
+  variable         dt_d   equal 1      # Dump output stride [ts].
+
+#---------------------------- Atomic setup ------------------------------------#
+  units         lj
+
+# create atoms
+  lattice       ${lat} ${rho}
+  region        sim_box block 0 ${n} 0 ${n} 0 ${n}
+  create_box    1 sim_box
+  create_atoms  1 box
+
+# Interatomic potential information.
+  pair_style       lj/cut 2.5
+  pair_modify      tail yes
+  pair_coeff       * * 1 1
+  neigh_modify     delay 0
+  mass             1 1
+
+  # Run simulation.
+  dump             d1 all custom ${dt_d} data/dump/dump_${lat}${sfx}_*.dat &
+                   id type x y z
+  run              0
