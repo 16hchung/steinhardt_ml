@@ -9,20 +9,6 @@ from util import dir_util
 # Input parameters and setup.                                                  #
 ################################################################################
 
-#perplexity = int(sys.argv[1])
-#
-#M = 2000 # Number of data points used in tSNE.
-#N_var_99 = 21 # Number of PCA components to explain 99% of the variance.
-#
-## Load data from example files and limit data points.
-#X = loadtxt('../02_order_features/data/X_train.dat')
-#y = loadtxt('../02_order_features/data/y_train.dat')
-#X = X[:M]
-#y = y[:M]
-#
-## Save labels used in tSNE.
-#if perplexity == 10:
-#  savetxt('data/y.dat', y)
 perplexity_list = [10, 50, 200, 500, 1000]
 default_perplexity = 10
 
@@ -45,8 +31,6 @@ def input_params_and_setup(perplexity, paths):
 # Compute tSNE.                                                                #
 ################################################################################
 
-#X_tsne = TSNE(perplexity=perplexity).fit_transform(X)
-#savetxt('data/tSNE_%d.dat' % perplexity, X_tsne)
 def compute_tsne(X, perplexity, paths, fname=None):
   if not fname:
     fname = paths.X_tmplt.format(perplexity)
@@ -57,12 +41,6 @@ def compute_tsne(X, perplexity, paths, fname=None):
 # Compute tSNE w/ PCA filter.                                                  #
 ################################################################################
 
-#pca = PCA(n_components=N_var_99)
-#X_pca = pca.fit(X).transform(X)
-#
-## Loop over perplexities.
-#X_tsne = TSNE(perplexity=perplexity).fit_transform(X_pca)
-#savetxt('data/tSNE_PCA_%d.dat' % perplexity, X_tsne)
 def compute_tsne_with_PCA(X, perplexity, paths):
   N_var_99 = 21 # Number of PCA components to explain 99% of the variance.
 

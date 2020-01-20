@@ -1,11 +1,6 @@
 import numpy as np
 from ovito.io import import_file
 
-# Import my own modules.
-#import sys
-#sys.path.append('../my_modules/')
-#from auxiliary_functions import *
-#from constants import *
 from util import calc
 from util import constants as cnst
 from util import dir_util

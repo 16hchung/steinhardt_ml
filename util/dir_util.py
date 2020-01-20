@@ -3,7 +3,6 @@ from collections import namedtuple
 from pathlib import Path
 
 blank = '{}'
-pseudo_prefix = 'pseudo_' if pseudo else ''
 
 def dump_path_for_lattice00(latt, perfect=False):
   perf_suffix = '_perfect' if perfect else ''
@@ -11,9 +10,11 @@ def dump_path_for_lattice00(latt, perfect=False):
   return make_dirs(cnst.md_path + latt.sim_dir + dump_tmpl.format(latt.name, perf_suffix, blank))[0]
 
 def all_features_path01(latt, pseudo=False):
+  pseudo_prefix = 'pseudo_' if pseudo else ''
   return make_dirs('{}data/X/{}X_{}.dat'.format(cnst.raw_feat_path, pseudo_prefix, latt.name))[0]
 
 def clean_features_paths02(istest=False, pseudo=False):
+  pseudo_prefix = 'pseudo_' if pseudo else ''
   split_lbl = 'test' if istest else 'train'
   tmplt = '{par_dir}data/{ps}{blank}{blank}_{split_lbl}.dat'.format(
     ps=pseudo_prefix, par_dir=cnst.clean_feat_path, blank=blank, split_lbl=split_lbl
@@ -27,6 +28,7 @@ def clean_features_paths02(istest=False, pseudo=False):
   return Paths(*make_dirs(unscaledX, X, y))
 
 def scaler_path02(pseudo=False):
+  pseudo_prefix = 'pseudo_' if pseudo else ''
   return '{}data/{}scaler.pkl'.format(cnst.clean_feat_path, pseudo_prefix)
 
 def pca_data_paths03():

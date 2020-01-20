@@ -16,11 +16,6 @@ dL0_y = 0.10 # Initial spacing along y.
 L = 1/(N+1) # Total length occupied by panels in each direction.
 dL = 0.90*L # Length of panel sides.
 
-# Load data.
-#X = loadtxt('../02_order_features/data/X_unscaled_train.dat')
-#y = loadtxt('../02_order_features/data/y_train.dat')
-#X = X[:M]
-#y = y[:M]
 def load_data():
   paths = dir_util.clean_features_paths02()
   X = np.loadtxt(paths.unscaledX)
@@ -33,31 +28,6 @@ def load_data():
 # Plot unscaled data.                                                          #
 ################################################################################
 
-## Start figure.
-#fig = plt.figure(figsize=(15,15))
-#
-## Loop over all unique ell pairs.
-#for li in range(N):
-#  for lj in range(li,N):
-#    ax  = fig.add_axes([dL0_x+li*L, 1-dL0_y-lj*L, dL, dL]) # Create frames.
-#
-#    ax.plot(X[y==1][:,li], X[y==1][:,lj], 'C0s', alpha=0.1, mew=0)
-#    ax.plot(X[y==0][:,li], X[y==0][:,lj], 'C3o', alpha=0.1, mew=0)
-#    ax.plot(X[y==2][:,li], X[y==2][:,lj], 'C2^', alpha=0.1, mew=0)
-#    
-#    # Remove panels and ticks.
-#    ax.set_xticklabels([])
-#    ax.set_yticklabels([])
-#    ax.tick_params(axis='x', which='both', bottom=False, top=False)
-#    ax.tick_params(axis='y', which='both', right=False, left=False)
-#
-#    # Add panel labels.
-#    if li == 0:
-#      ax.annotate(r'$Q_{%d}$' % (lj+1), size=30, xy=(-0.65,0.40), xycoords='axes fraction')
-#    if lj == N-1:
-#      ax.annotate(r'$Q_{%d}$' % (li+1), size=30, xy=(0.33,-0.40), xycoords='axes fraction')
-#fig.savefig("fig_Q_vs_Q.png", dpi=300)
-#plt.close()
 def main():
   X,y = load_data()
 
