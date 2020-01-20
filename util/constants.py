@@ -17,12 +17,17 @@ svm_rbf_ovo_path = 'c_svm_rbf_ovo/'
 
 ######### CRYSTAL STRUCTURES ########
 
-Lattice= namedtuple('CrystalStruct', 'name, sim_dir, y_label, n_neigh, pt_fmt')
+Lattice= namedtuple('CrystalStruct', 'name, sim_dir, y_label, n_neigh, pt_fmt, ps_pt_fmt')
 
 lattices = [
-  Lattice(name='bcc', sim_dir='02_crystals/', y_label=3, n_neigh=8 , pt_fmt='C0s'),#int(CNAModifier.Type.BCC)),
-  Lattice(name='fcc', sim_dir='02_crystals/', y_label=1, n_neigh=12, pt_fmt='C3o'),#int(CNAModifier.Type.FCC)),
-  Lattice(name='hcp', sim_dir='02_crystals/', y_label=2, n_neigh=12, pt_fmt='C2^'),#int(CNAModifier.Type.HCP)),
+  Lattice(name='bcc', sim_dir='02_crystals/', y_label=3, n_neigh=8 , pt_fmt='C0s', ps_pt_fmt='C0P'),#int(CNAModifier.Type.BCC)),
+  Lattice(name='fcc', sim_dir='02_crystals/', y_label=1, n_neigh=12, pt_fmt='C3o', ps_pt_fmt='C3.'),#int(CNAModifier.Type.FCC)),
+  Lattice(name='hcp', sim_dir='02_crystals/', y_label=2, n_neigh=12, pt_fmt='C2^', ps_pt_fmt='C2*'),#int(CNAModifier.Type.HCP)),
   #Lattice(name='liq', sim_dir='03_liquid/',   cna_mod_type=0, n_neigh=None)#int(CNAModifier.Type.OTHER))
 ]
 
+str_to_latt = {
+  'bcc': lattices[0],
+  'fcc': lattices[1],
+  'hcp': lattices[2],
+}

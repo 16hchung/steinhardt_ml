@@ -23,9 +23,12 @@ def compute(latt, pseudo=.06):
 def main():
   import argparse
   parser = argparse.ArgumentParser()
+  parser.add_argument('--latt', type=str, default=None)
   parser.add_argument('--pseudo_param', type=float, default=None)
   args = parser.parse_args()
-  for latt in cnst.lattices:
+  
+  lattices = cnst.lattices if args.latt == None else [cnst.str_to_latt[args.latt]]
+  for latt in lattices:
     print(latt.name)
     compute(latt, args.pseudo_param)
 

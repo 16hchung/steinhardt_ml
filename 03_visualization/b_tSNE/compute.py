@@ -5,18 +5,17 @@ from sklearn.decomposition import PCA
 
 from util import dir_util
 
-################################################################################
-# Input parameters and setup.                                                  #
-################################################################################
+##########################################################################
+# Input parameters and setup.                                            #
+##########################################################################
 
 perplexity_list = [10, 50, 200, 500, 1000]
 default_perplexity = 10
+M = 1000 # Number of data points used in tSNE.
 
-def input_params_and_setup(perplexity, paths):
-  M = 2000 # Number of data points used in tSNE.
-
+def input_params_and_setup(perplexity, paths, pseudo=True):
   # Load data from example files and limit data points.
-  fnames = dir_util.clean_features_paths02()
+  fnames = dir_util.clean_features_paths02(pseudo=pseudo)
   X = np.loadtxt(fnames.X)
   y = np.loadtxt(fnames.y)
   X = X[:M]
@@ -27,9 +26,12 @@ def input_params_and_setup(perplexity, paths):
     np.savetxt(paths.y, y, fmt='%i')
   return X, y
 
-################################################################################
-# Compute tSNE.                                                                #
-################################################################################
+def split_to_real_pseudo(tSNE):
+  return tSNE[:M], tSNE[M:]
+
+##########################################################################
+# Compute tSNE.                                                          #
+##########################################################################
 
 def compute_tsne(X, perplexity, paths, fname=None):
   if not fname:
@@ -37,9 +39,9 @@ def compute_tsne(X, perplexity, paths, fname=None):
   X_tsne = TSNE(perplexity=perplexity).fit_transform(X)
   np.savetxt(fname, X_tsne)
 
-################################################################################
-# Compute tSNE w/ PCA filter.                                                  #
-################################################################################
+##########################################################################
+# Compute tSNE w/ PCA filter.                                            #
+##########################################################################
 
 def compute_tsne_with_PCA(X, perplexity, paths):
   N_var_99 = 21 # Number of PCA components to explain 99% of the variance.
@@ -48,14 +50,17 @@ def compute_tsne_with_PCA(X, perplexity, paths):
   X_pca = pca.fit(X).transform(X)
   compute_tsne(X_pca, perplexity, paths, paths.X_with_PCA_tmplt.format(perplexity))
 
-################################################################################
+##########################################################################
 
 def main(perplexity=default_perplexity):
-  paths = dir_util.tSNE_data_paths03()
+  paths    = dir_util.tSNE_data_paths03()
+  ps_paths = dir_util.tSNE_data_paths03(pseudo=True)
   
-  X, y = input_params_and_setup(perplexity, paths)
-  compute_tsne(X, perplexity, paths)
-  compute_tsne_with_PCA(X, perplexity, paths)
+  X, y       = input_params_and_setup(perplexity, paths,    pseudo=False)
+  ps_X, ps_y = input_params_and_setup(perplexity, ps_paths, pseudo=True)
+  all_X = np.row_stack((X, ps_X))
+  compute_tsne(all_X, perplexity, paths)
+  compute_tsne_with_PCA(all_X, perplexity, paths)
 
 def main_many():
   for p in tqdm(perplexity_list):

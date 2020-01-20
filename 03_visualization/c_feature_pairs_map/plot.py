@@ -17,7 +17,7 @@ L = 1/(N+1) # Total length occupied by panels in each direction.
 dL = 0.90*L # Length of panel sides.
 
 def load_data():
-  paths = dir_util.clean_features_paths02()
+  paths = dir_util.clean_features_paths02(pseudo=True)
   X = np.loadtxt(paths.unscaledX)
   y = np.loadtxt(paths.y)
   X = X[:M]
