@@ -47,7 +47,7 @@ def add_offsets(pipeline, data):
   first_neigh_d = list(finder.find(10))[0].distance
   
   # uniformly add noise to positions
-  def add_single_offset(frame, data):
+  def pipeline_add_offsets(frame, data):
     positions = data.particles_.positions
     n_total_coords = positions[:].size 
     # generate unit vectors in random directions
@@ -63,7 +63,7 @@ def add_offsets(pipeline, data):
     # add displacement vectors to positions
     data.particles_.positions_ += displc_vecs
 
-  pipeline.modifiers.append(add_single_offset)
+  pipeline.modifiers.append(pipeline_add_offsets)
   return pipeline.compute()
   
 
