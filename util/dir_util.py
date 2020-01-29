@@ -14,6 +14,9 @@ def all_features_path01(latt, pseudo=False):
   pseudo_prefix = pseudo_pre if pseudo else ''
   return make_dirs('{}data/X/{}X_{}.dat'.format(cnst.raw_feat_path, pseudo_prefix, latt.name))[0]
 
+def synth_carteasian_path01(latt):
+  return make_dirs('{}data/synth_cart/{}.dat'.format(cnst.raw_feat_path, latt.name))[0]
+
 def clean_features_paths02(istest=False, pseudo=False):
   pseudo_prefix = pseudo_pre if pseudo else ''
   split_lbl = 'test' if istest else 'train'
