@@ -1,6 +1,6 @@
 lat=(fcc bcc hcp)
 #n=(6 8 6)
-n=(21 24 21)
+n=(10 12 10)
 lmmps=perfect
 #lmmps=real
 suffix=_perfect
