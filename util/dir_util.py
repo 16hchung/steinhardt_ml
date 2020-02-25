@@ -77,8 +77,9 @@ def zscore_fig_path03(latt):
   mins = tmplt.format('mins')
   maxs = tmplt.format('maxs')
   avgs = tmplt.format('avgs')
-  Paths = namedtuple('Paths', 'mins maxs avgs')
-  return Paths(*make_dirs(mins, maxs, avgs))
+  meds = tmplt.format('meds')
+  Paths = namedtuple('Paths', 'mins maxs avgs meds')
+  return Paths(*make_dirs(mins, maxs, avgs, meds))
 
 def grid_search_paths04(model_dir, tmplt):
   data_path = 'grid_search_data/'

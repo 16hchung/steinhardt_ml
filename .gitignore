@@ -4,6 +4,7 @@ __pycache__/
 *.gz
 *.log
 .*.swp
+*.vim
 
 old_files/
 last
