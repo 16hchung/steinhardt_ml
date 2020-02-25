@@ -8,3 +8,5 @@ __pycache__/
 
 old_files/
 last
+
+!*/best_parameters.dat

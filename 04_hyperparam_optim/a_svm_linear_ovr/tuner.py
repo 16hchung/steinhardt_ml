@@ -17,12 +17,7 @@ class ModelTunerA(ModelTuner):
   def set_hyperparam(self):
     self.model_params['C'] = .3
 
-  def gs_compute(self):
-    X,y = self.load_data()
-    gs.compute.grid_search_C_only(self.model, self.model_args, X, y, self.gs_paths)
-
-  def gs_plot(self):
-    gs.plot.plot_validation('C', self.gs_paths.val_curve_data_tmplt.format(''), self.gs_paths.val_curve_fig_tmplt.format(''))
+  # use parent implementations of gs_compute and gs_plot
 
   def lc_compute(self):
     X,y = self.load_data()

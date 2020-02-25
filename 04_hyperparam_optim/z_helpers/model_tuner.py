@@ -47,18 +47,19 @@ class ModelTuner:
 
   # Load data set.
   def load_data(self):
-    paths = dir_util.clean_features_paths02()
-    X = np.loadtxt(paths.X)
-    y = np.loadtxt(paths.y)
+    paths = dir_util.clean_features_paths02(pseudo=True)
+    X = np.loadtxt(paths.X.format('adapt_'))
+    y = np.loadtxt(paths.y.format('adapt_'))
     return X,y
 
   ######## Grid search functions ###############
 
   def gs_compute(self):
-    pass
+    X,y = self.load_data()
+    gs.compute.grid_search_C_only(self.model, self.model_params, X, y, self.gs_paths)
 
   def gs_plot(self):
-    pass
+    gs.plot.plot_validation('C', self.gs_paths.val_curve_data_tmplt.format(''), self.gs_paths.val_curve_fig_tmplt.format(''))
 
   def lc_compute(self):
     pass
