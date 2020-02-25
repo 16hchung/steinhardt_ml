@@ -1,5 +1,5 @@
+import numpy as np
 from collections import namedtuple
-#from ovito.modifiers import CommonNeighborAnalysisModifier as CNAModifier
 
 ######### DIRECTORIES ###############
 
@@ -9,6 +9,7 @@ clean_feat_path = '02_clean_features/'
 vis_path = '03_visualization/'
 pca_path  = '{}a_PCA/'.format(vis_path)
 tSNE_path = '{}b_tSNE/'.format(vis_path)
+zscore_path = '{}d_zscores/'.format(vis_path)
 vis_figures_path = '{}figures/'.format(vis_path)
 hyperparam_optim_path = '04_hyperparam_optim/'
 svm_lin_ovr_path = 'a_svm_linear_ovr/'
@@ -26,8 +27,11 @@ lattices = [
   #Lattice(name='liq', sim_dir='03_liquid/',   cna_mod_type=0, n_neigh=None)#int(CNAModifier.Type.OTHER))
 ]
 
+possible_n_neigh = [l.n_neigh for l in lattices]
+
 str_to_latt = {
   'bcc': lattices[0],
   'fcc': lattices[1],
   'hcp': lattices[2],
 }
+

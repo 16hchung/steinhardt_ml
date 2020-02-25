@@ -8,11 +8,12 @@ from util import dir_util
 from util import constants as cnst
 
 # Load features and balance classes.
-def load_and_balance(pseudo=True):
+def load_and_balance(n_neigh=None):
   Xs = {}
   for latt in cnst.lattices:
     # default is to use pseudo data
-    Xs[latt] = np.loadtxt(dir_util.all_features_path01(latt, pseudo=pseudo))
+    neigh = latt.n_neigh if n_neigh == None else n_neigh
+    Xs[latt] = np.loadtxt(dir_util.all_features_path01(latt, pseudo=n_neigh == None).format(neigh))
   N_min = min([x.shape[0] for x in Xs.values()])
   Xs = {l:x[:N_min] for l,x in Xs.items()}
   return Xs
@@ -31,41 +32,43 @@ def combine_lattices_data(Xs, ys):
   return X,y
 
 # Split in test/train with shuffle and save unscaled features.
-def split_and_save(ps_X, ps_y, X, y):
+def split_and_save(X, y, fnames, n_neigh):
   # save unscaled features
-  # NOTE: always going to train on pseudo steinhardts
-  X_train, y_train = shuffle(ps_X, ps_y)
+  X, y= shuffle(X, y)
   # NOTE: split real steinhardts into validation (Eg for learning curves) and test sets
-  X_val, X_test, y_val, y_test = train_test_split(X,y,test_size=.6,shuffle=True)
-  train_names = dir_util.clean_features_paths02(pseudo=True)
-  val_names   = dir_util.clean_features_paths02()
-  test_names  = dir_util.clean_features_paths02(istest=True)
-  np.savetxt(test_names.unscaledX , X_test, fmt='%.10e')
-  np.savetxt(val_names.unscaledX  , X_val , fmt='%.10e')
-  np.savetxt(train_names.unscaledX, X_train, fmt='%.10e')
-  np.savetxt(test_names.y         , y_test, fmt='%d')
-  np.savetxt(val_names.y          , y_val , fmt='%d')
-  np.savetxt(train_names.y        , y_train, fmt='%d')
+  np.savetxt(fnames.unscaledX.format(n_neigh), X, fmt='%.10e')
+  np.savetxt(fnames.y.format(n_neigh),         y, fmt='%d')
+  return X, y
 
+def scale_data(X, n_neigh, fnames, scaler=None):
   # scale features and save
-  scaler = StandardScaler().fit(X_train)
-  X_train = scaler.transform(X_train)
-  X_test  = scaler.transform(X_test)
-  X_val   = scaler.transform(X_val)
-  joblib.dump(scaler, dir_util.scaler_path02(pseudo=True))
+  if scaler == None:
+    scaler = StandardScaler().fit(X)
+    joblib.dump(scaler, dir_util.scaler_path02(pseudo=True).format(n_neigh))
+  X = scaler.transform(X)
 
-  np.savetxt(test_names.X , X_test, fmt='%.10e')
-  np.savetxt(val_names.X  , X_val , fmt='%.10e')
-  np.savetxt(train_names.X, X_train,fmt='%.10e')
+  np.savetxt(fnames.X.format(n_neigh), X, fmt='%.10e')
+  return scaler
+
+def process_n_neigh(fnames, n_neigh=None): # if default: generate pseudo/adaptive training 
+  Xs = load_and_balance(n_neigh)
+  ys = make_labels(Xs)
+  X, y = combine_lattices_data(Xs, ys)
+  X, y = split_and_save(X, y, fnames, 'adapt_' if n_neigh == None else n_neigh)
+  return X, y
 
 def main():
-  ps_Xs = load_and_balance(pseudo=True)
-  ps_ys = make_labels(ps_Xs)
-  Xs = load_and_balance(pseudo=False)
-  ys = make_labels(Xs)
-  ps_X,ps_y = combine_lattices_data(ps_Xs, ps_ys)
-  X,y = combine_lattices_data(Xs, ys)
-  split_and_save(ps_X, ps_y, X,y)
+  # do synth
+  fnames = dir_util.clean_features_paths02(pseudo=True)
+  scaler_path = dir_util.scaler_path02(pseudo=True)
+  X, _ = process_n_neigh(fnames)
+  scaler = scale_data(X, 'adapt_', fnames)
+
+  # do real looping thru possible n_neigh
+  for neigh in cnst.possible_n_neigh:
+    fnames = dir_util.clean_features_paths02(istest=True)
+    X, _ = process_n_neigh(fnames, neigh)
+    scale_data(X, neigh, fnames, scaler)
 
 if __name__=='__main__':
   main()

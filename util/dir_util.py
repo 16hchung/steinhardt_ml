@@ -12,7 +12,7 @@ def dump_path_for_lattice00(latt, perfect=False):
 
 def all_features_path01(latt, pseudo=False):
   pseudo_prefix = pseudo_pre if pseudo else ''
-  return make_dirs('{}data/X/{}X_{}.dat'.format(cnst.raw_feat_path, pseudo_prefix, latt.name))[0]
+  return make_dirs('{}data/X/{}/X_{}{}_neigh.dat'.format(cnst.raw_feat_path, latt.name, pseudo_prefix, blank))[0]
 
 def synth_carteasian_path01(latt):
   return make_dirs('{}data/synth_cart/{}.dat'.format(cnst.raw_feat_path, latt.name))[0]
@@ -20,20 +20,20 @@ def synth_carteasian_path01(latt):
 def clean_features_paths02(istest=False, pseudo=False):
   pseudo_prefix = pseudo_pre if pseudo else ''
   split_lbl = 'test' if istest else 'train'
-  tmplt = '{par_dir}data/{ps}{blank}{blank}_{split_lbl}.dat'.format(
+  tmplt = '{par_dir}data/{ps}{blank}{blank}_{split_lbl}_{blank}neigh.dat'.format(
     ps=pseudo_prefix, par_dir=cnst.clean_feat_path, blank=blank, split_lbl=split_lbl
   )
 
-  unscaledX = tmplt.format('X', '_unscaled')
-  X = tmplt.format('X', '')
-  y = tmplt.format('y', '')
+  unscaledX = tmplt.format('X', '_unscaled', blank)
+  X = tmplt.format('X', '', blank)
+  y = tmplt.format('y', '', blank)
 
   Paths = namedtuple('Paths', 'unscaledX X y')
   return Paths(*make_dirs(unscaledX, X, y))
 
 def scaler_path02(pseudo=False):
   pseudo_prefix = pseudo_pre if pseudo else ''
-  return '{}data/{}scaler.pkl'.format(cnst.clean_feat_path, pseudo_prefix)
+  return '{}data/{}scaler_{}neigh.pkl'.format(cnst.clean_feat_path, pseudo_prefix, blank)
 
 def pca_data_paths03(pseudo=False):
   pseudo_prefix = pseudo_pre if pseudo else ''
@@ -67,6 +67,18 @@ def tSNE_fig_tmplts03():
 
 def feat_pairs_map_path03():
   return make_dirs('{}fig_Q_vs_Q.png'.format(cnst.vis_figures_path))[0]
+
+def zscore_data_path03(latt, synth=False):
+  synth_prefix = 'synth_' if synth else ''
+  return make_dirs('{}data/{}zscores_{}.dat'.format(cnst.zscore_path, synth_prefix, latt.name))[0]
+
+def zscore_fig_path03(latt):
+  tmplt = '{}zscores/{}_{}'.format(cnst.vis_figures_path, latt.name, blank)
+  mins = tmplt.format('mins')
+  maxs = tmplt.format('maxs')
+  avgs = tmplt.format('avgs')
+  Paths = namedtuple('Paths', 'mins maxs avgs')
+  return Paths(*make_dirs(mins, maxs, avgs))
 
 def grid_search_paths04(model_dir, tmplt):
   data_path = 'grid_search_data/'

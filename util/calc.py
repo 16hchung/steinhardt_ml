@@ -39,7 +39,7 @@ def steinhardt(r,l):
     Q[i] = sqrt(real((4*pi/(2*l[i]+1)) * sum(q*conjugate(q))))
   return Q
 
-def add_offsets(pipeline, data, position_noise_scaler=.06):
+def add_offsets(pipeline, data, scale=.06):
   # get first neighbor distance
   finder = NearestNeighborFinder(1, data)
   # arbitrarily use 10th atom as center
@@ -56,7 +56,7 @@ def add_offsets(pipeline, data, position_noise_scaler=.06):
     displc_vecs = displc_vecs / norms
     # generate uniformly distributed random displacement magnitudes to apply to displc_vecs
     mags = np_rnd.uniform(
-        0, first_neigh_d * position_noise_scaler, 
+        0, first_neigh_d * scale, 
         size=n_total_points
     ).reshape(norms.shape)
     displc_vecs = displc_vecs * mags
