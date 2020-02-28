@@ -13,26 +13,11 @@ class ModelTunerA(ModelTuner):
     model = LinearSVC
     model_args = {'class_weight':'balanced'}
     super().__init__(model, model_args, cnst.svm_lin_ovr_path)
+    self.hyperprm_sffx = ''
 
   def set_hyperparam(self):
     self.model_params['C'] = .3
-
-  # use parent implementations of gs_compute and gs_plot
-
-  def lc_compute(self):
-    X,y = self.load_data()
-    self.set_hyperparam()
-    lc.compute.run(X, y, self.model, self.model_params, self.lc_paths.data)
-
-  def lc_plot(self):
-    data_path = self.lc_paths.data
-    fig_path = self.lc_paths.fig
-    lc.plot.plot_learning(data_path, fig_path)
-
-  def ms_compute(self):
-    X,y = self.load_data()
-    self.set_hyperparam()
-    ms.compute.run(X,y, self.model, self.model_params, self.ms_paths.model_tmplt.format(hyperprm_sffx='_C_3e-1'), self.ms_paths.scores)
+    self.hyperprm_sffx = '_C_3e-1'
 
 if __name__=='__main__':
   tuner = ModelTunerA()

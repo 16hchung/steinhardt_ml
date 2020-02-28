@@ -15,6 +15,7 @@ hyperparam_optim_path = '04_hyperparam_optim/'
 svm_lin_ovr_path = 'a_svm_linear_ovr/'
 svm_lin_ovo_path = 'b_svm_linear_ovo/'
 svm_rbf_ovo_path = 'c_svm_rbf_ovo/'
+ocsvm_rbf_path = 'd_ocsvm_rbf/'
 
 ######### CRYSTAL STRUCTURES ########
 
@@ -35,3 +36,6 @@ str_to_latt = {
   'hcp': lattices[2],
 }
 
+lbl_to_latt = {l.y_label : l for l in lattices}
+
+n_features = 30

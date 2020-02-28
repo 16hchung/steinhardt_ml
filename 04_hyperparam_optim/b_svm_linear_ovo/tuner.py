@@ -10,13 +10,13 @@ from util import dir_util
 class ModelTunerB(ModelTuner):
   def __init__(self):
     model = SVC
-    model_args = {'kernel':'linear'}
+    model_args = {'kernel':'linear', 'cache_size':1000}
     super().__init__(model, model_args, cnst.svm_lin_ovo_path)
-
-  # use parent implementations of gs_compute and gs_plot
+    self.hyperprm_sffx = ''
 
   def set_hyperparam(self):
     self.model_params['C'] = .03
+    self.hyperprm_sffx = '_C_3e-1'
 
 if __name__=='__main__':
   tuner = ModelTunerB()

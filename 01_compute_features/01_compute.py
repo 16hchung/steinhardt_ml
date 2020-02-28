@@ -45,7 +45,7 @@ def main():
   args = parser.parse_args()
  
   # constants
-  l = np.arange(1,30+1)
+  l = np.arange(1,cnst.n_features+1)
   N_stein = len(l)
   pseudo_param = args.pseudo_param if args.pseudo_param != None \
             else .3                if args.comp_both            \

@@ -100,7 +100,7 @@ def learning_curve_paths04(model_dir, tmplt):
 def model_score_paths04(model_dir, tmplt):
   subdir = 'model_score/'
   model = tmplt.format(subdir=subdir, fname='model{hyperprm_sffx}.pkl')
-  scores = tmplt.format(subdir=subdir, fname='scores.dat')
+  scores = tmplt.format(subdir=subdir, fname='scores_{}neigh.dat')
   Paths = namedtuple('Paths', 'model_tmplt scores')
   return Paths(*make_dirs(model, scores))
 

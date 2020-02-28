@@ -31,44 +31,49 @@ def combine_lattices_data(Xs, ys):
   y = np.concatenate(list(ys.values()))
   return X,y
 
-# Split in test/train with shuffle and save unscaled features.
-def split_and_save(X, y, fnames, n_neigh):
-  # save unscaled features
-  X, y= shuffle(X, y)
-  # NOTE: split real steinhardts into validation (Eg for learning curves) and test sets
-  np.savetxt(fnames.unscaledX.format(n_neigh), X, fmt='%.10e')
-  np.savetxt(fnames.y.format(n_neigh),         y, fmt='%d')
-  return X, y
-
 def scale_data(X, n_neigh, fnames, scaler=None):
   # scale features and save
   if scaler == None:
     scaler = StandardScaler().fit(X)
     joblib.dump(scaler, dir_util.scaler_path02(pseudo=True).format(n_neigh))
   X = scaler.transform(X)
-
-  np.savetxt(fnames.X.format(n_neigh), X, fmt='%.10e')
-  return scaler
+  return scaler, X
 
 def process_n_neigh(fnames, n_neigh=None): # if default: generate pseudo/adaptive training 
   Xs = load_and_balance(n_neigh)
   ys = make_labels(Xs)
   X, y = combine_lattices_data(Xs, ys)
-  X, y = split_and_save(X, y, fnames, 'adapt_' if n_neigh == None else n_neigh)
   return X, y
+
+def shuffle_all_and_save(Xs, ys, fnames, n_neighs, scaler):
+  shuff = shuffle(*Xs, *ys)
+  Xs = shuff[:len(Xs)]
+  ys = shuff[len(Xs):]
+  
+  for i, X in enumerate(Xs):
+    y = ys[i]
+    n_neigh = n_neighs[i]
+    np.savetxt(fnames.unscaledX.format(n_neigh), X, fmt='%.10e')
+    np.savetxt(fnames.y.format(n_neigh),         y, fmt='%d')
+    X = scaler.transform(X)
+    np.savetxt(fnames.X.format(n_neigh), X, fmt='%.10e')
 
 def main():
   # do synth
   fnames = dir_util.clean_features_paths02(pseudo=True)
   scaler_path = dir_util.scaler_path02(pseudo=True)
-  X, _ = process_n_neigh(fnames)
-  scaler = scale_data(X, 'adapt_', fnames)
+  X, y = process_n_neigh(fnames)
+  scaler, _ = scale_data(X, 'adapt_', fnames)
 
   # do real looping thru possible n_neigh
+  Xs = []
+  ys = []
   for neigh in cnst.possible_n_neigh:
     fnames = dir_util.clean_features_paths02(istest=True)
-    X, _ = process_n_neigh(fnames, neigh)
-    scale_data(X, neigh, fnames, scaler)
-
+    X, y = process_n_neigh(fnames, neigh)
+    Xs.append(X)
+    ys.append(y)
+  shuffle_all_and_save(Xs, ys, fnames, cnst.possible_n_neigh, scaler)
+    
 if __name__=='__main__':
   main()
