@@ -9,7 +9,7 @@ from util import dir_util
 class ModelTunerD(ModelTuner):
   def __init__(self):
     model = MultiOutlierClassifier
-    model_args = {}
+    model_args = {'max_iter':10000}
     #model_args = {'nu': .2}
     super().__init__(model, model_args, cnst.ocsvm_rbf_path)
     self.hyperprm_sffx = ''

@@ -1,4 +1,5 @@
 from sklearn.svm import OneClassSVM
+from sklearn.preprocessing import StandardScaler
 import numpy as np
 
 from util import constants as cnst
@@ -10,6 +11,7 @@ class MultiOutlierClassifier: #NOTE: Classes are 1 indexed
   def __init__(self, n_classes=n_latt, single_model=OneClassSVM, **kwargs):
     self.n_classes = n_classes
     self.cls_to_svm = [single_model(**kwargs) for _ in range(n_classes)]
+    self.df_scalers = [StandardScaler(with_mean=0, with_std=1) for _ in range(n_classes)]
 
 
   def fit(self, X, y):
@@ -19,6 +21,12 @@ class MultiOutlierClassifier: #NOTE: Classes are 1 indexed
     for cls, svm in enumerate(self.cls_to_svm):
       specificX = X[y==cls+1]
       svm.fit(specificX)
+
+    for cls, scaler in enumerate(self.df_scalers):
+      specificX = X[y==cls+1]
+      df = self.decision_function(specificX)[:,cls]
+      df = df[df>0] # get rid of outliers before scaling
+      scaler.fit(df[:,np.newaxis])
 
     return self
 
@@ -34,7 +42,7 @@ class MultiOutlierClassifier: #NOTE: Classes are 1 indexed
 
 
   def predict(self, X):
-    scores = self.decision_function(X)
+    scores = self.decision_function(X, scaled=True)
     y_pred = np.argmax(scores, axis=1) + 1
     max_scores = np.max(scores, axis=1)
     y_pred[max_scores < 0] = -1
@@ -48,11 +56,17 @@ class MultiOutlierClassifier: #NOTE: Classes are 1 indexed
     return np.mean(y_same)
 
 
-  def decision_function(self, X):
+  def decision_function(self, X, scaled=False):
     scores = []
     for svm in self.cls_to_svm:
       scores.append(svm.decision_function(X)[:, np.newaxis])
-    return np.concatenate(scores, axis=1)
+    df = np.concatenate(scores, axis=1)
+    if scaled:
+      is_outlier = df < 0
+      for cls, scaler in enumerate(self.df_scalers):
+        df[:, cls] = scaler.transform(df[:,cls,np.newaxis])[:,0]
+      df[is_outlier] = -1
+    return df
 
 '''
 TODO

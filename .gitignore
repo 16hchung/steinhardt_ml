@@ -10,3 +10,4 @@ old_files/
 last
 
 !*/best_parameters.dat
+!04_hyperparam_optim/d_ocsvm_rbf/model_score/score*
