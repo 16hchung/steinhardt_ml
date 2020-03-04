@@ -9,7 +9,7 @@ n_latt = len(cnst.lattices)
 class MultiOutlierClassifier: #NOTE: Classes are 1 indexed
   def __init__(self, n_classes=n_latt, single_model=OneClassSVM, **kwargs):
     self.n_classes = n_classes
-    self.cls_to_svm = [single_model(**kwargs) for cls in range(1, n_classes+1)]
+    self.cls_to_svm = [single_model(**kwargs) for _ in range(n_classes)]
 
 
   def fit(self, X, y):

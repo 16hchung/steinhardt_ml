@@ -5,6 +5,7 @@ from util import dir_util
 from . import a_grid_search as gs
 from . import b_learning_curve as lc
 from . import c_model_scores as ms
+from . import d_decision_fxn as df
 
 class ModelTuner:
   def __init__(self, model, model_params, model_dir):
@@ -16,15 +17,20 @@ class ModelTuner:
     self.gs_paths = self.all_paths.grid_search
     self.lc_paths = self.all_paths.learning_curve
     self.ms_paths = self.all_paths.model_score
+    self.df_paths = self.all_paths.decision_fxn
     # this class method options
     self.should_relbl_wrong_neigh = False
+    self.use_pretrained = False
 
   def cmdline_main(self):
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument('--stage', type=str, help='options: gs<1/2> (grid search), lc<1/2> (learning curve), ms<1/2> (model score)')
+    parser.add_argument('--pretrained', action='store_true')
     args = parser.parse_args()
     stage = args.stage
+
+    self.use_pretrained = args.pretrained
 
     if stage == 'gs1':
       self.gs_compute()
@@ -42,6 +48,10 @@ class ModelTuner:
       self.lc_plot()
     elif stage == 'ms1':
       self.ms_compute()
+    elif stage == 'df1':
+      self.df_compute()
+    elif stage == 'df2':
+      self.df_plot()
     else:
       print('invalid stage argument')
 
@@ -79,3 +89,10 @@ class ModelTuner:
     self.set_hyperparam()
     ms.compute.run(X,y, self.model, self.model_params, self.ms_paths.model_tmplt.format(hyperprm_sffx=self.hyperprm_sffx), self.ms_paths.scores, relbl_wrong_neigh=self.should_relbl_wrong_neigh)
 
+  def df_compute(self):
+    X,y = self.load_data()
+    self.set_hyperparam()
+    df.compute.run(X, y, self.model, self.model_params, self.df_paths, self.ms_paths, self.use_pretrained)
+
+  def df_plot(self):
+    df.plot.run(self.df_paths)

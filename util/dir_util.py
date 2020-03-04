@@ -104,13 +104,21 @@ def model_score_paths04(model_dir, tmplt):
   Paths = namedtuple('Paths', 'model_tmplt scores')
   return Paths(*make_dirs(model, scores))
 
+def decision_fxn_paths(model_dir, tmplt):
+  subdir = 'decision_fxn/'
+  data_tmplt = tmplt.format(subdir=subdir, fname='df_{}.dat')
+  fig_tmplt  = tmplt.format(subdir=subdir, fname='df_{}.png')
+  Paths = namedtuple('Paths', 'data_tmplt fig_tmplt')
+  return Paths(*make_dirs(data_tmplt, fig_tmplt))
+
 def hyperparam_all_paths04(model_dir):
   tmplt = '{}{}{}{}'.format(cnst.hyperparam_optim_path, model_dir, '{subdir}', '{fname}')
-  AllPaths = namedtuple('AllPaths', 'grid_search learning_curve model_score')
+  AllPaths = namedtuple('AllPaths', 'grid_search learning_curve model_score decision_fxn')
   grid_search = grid_search_paths04(model_dir      , tmplt)
   learning_curve = learning_curve_paths04(model_dir, tmplt)
   model_score = model_score_paths04(model_dir      , tmplt)
-  return AllPaths(grid_search, learning_curve, model_score)
+  decision_fxn= decision_fxn_paths(model_dir       , tmplt)
+  return AllPaths(grid_search, learning_curve, model_score, decision_fxn)
 
 
 

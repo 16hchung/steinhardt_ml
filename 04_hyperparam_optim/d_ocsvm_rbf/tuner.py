@@ -15,6 +15,9 @@ class ModelTunerD(ModelTuner):
     self.hyperprm_sffx = ''
     self.should_relbl_wrong_neigh = True
 
+  def set_hyperparam(self):
+    self.model_params['nu'] = .15
+
 if __name__=='__main__':
   tuner = ModelTunerD()
   tuner.cmdline_main()
