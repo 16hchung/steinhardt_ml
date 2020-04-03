@@ -1,0 +1,16 @@
+Accuracy on validation set: 91.17
+
+              precision    recall  f1-score   support
+
+        -1.0       0.88      0.87      0.87      9504
+         1.0       0.95      0.96      0.95      9504
+         2.0       0.91      0.91      0.91      9504
+
+    accuracy                           0.91     28512
+   macro avg       0.91      0.91      0.91     28512
+weighted avg       0.91      0.91      0.91     28512
+
+Confusion Matrix:
+[[8226  393  885]
+ [ 399 9080   25]
+ [ 762   55 8687]]

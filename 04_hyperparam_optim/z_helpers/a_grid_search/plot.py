@@ -36,3 +36,6 @@ def plot_validation(param_name, data_path, fig_path, add_custom_plot_elements=la
   plt.close()
 
   ################################################################################
+
+def plot_grid(param_names, data_paths, fig_path, add_custom_plot_elements=lambda:None):
+  pass

@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.random as np_rnd
 from tqdm import tqdm
 from ovito.io import import_file, export_file
 
@@ -22,9 +23,10 @@ def compute_real(latt, l, N_stein):
   for n_neigh in cnst.possible_n_neigh:
     compute_real_n_neigh(latt, l, N_stein, n_neigh)
 
-def compute_synthetic(latt, l, N_stein, pseudo=default_pseudo):
+def compute_synthetic_n_neigh(latt, l, N_stein, pseudo, n_neigh):
   scales = np.linspace(.01, pseudo, num=10)
   X = np.zeros((0, N_stein))
+  np_rnd.seed(0)
   for s in tqdm(scales):
     pipeline = import_file(dir_util.dump_path_for_lattice00(latt, True).format(0))
     data = pipeline.compute()
@@ -33,8 +35,13 @@ def compute_synthetic(latt, l, N_stein, pseudo=default_pseudo):
     #  data, dir_util.synth_carteasian_path01(latt), "lammps_dump",
     #  columns = ["Position.X", "Position.Y", "Position.Z"]
     #)
-    X = np.vstack((X, calc.compute_steinhardt(data, l, latt.n_neigh)))
-  np.savetxt(dir_util.all_features_path01(latt, True).format(latt.n_neigh), X, fmt='%.10e')
+    X = np.vstack((X, calc.compute_steinhardt(data, l, n_neigh)))
+  print(np_rnd.randn(1))
+  np.savetxt(dir_util.all_features_path01(latt, True).format(n_neigh), X, fmt='%.10e')
+
+def compute_synthetic(latt, l, N_stein, pseudo=default_pseudo):
+  for n_neigh in tqdm(cnst.possible_n_neigh):
+    compute_synthetic_n_neigh(latt, l, N_stein, pseudo, n_neigh)
 
 def main():
   import argparse

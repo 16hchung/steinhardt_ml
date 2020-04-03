@@ -6,6 +6,7 @@ import joblib
 
 from util import dir_util
 from util import constants as cnst
+from util import calc
 
 ################################################################################
 # Train model.                                                                 #
@@ -24,8 +25,40 @@ def run(X,y, model, model_params, model_path, scores_path, relbl_wrong_neigh=Fal
     X_valid = np.loadtxt(paths.X.format(n_neigh))
     y_valid = np.loadtxt(paths.y.format(n_neigh))
     if relbl_wrong_neigh:
-      y_valid = relabel_wrong_neigh(y_valid, n_neigh)
+      y_valid = calc.relabel_wrong_neigh(y_valid, n_neigh)
     save_scores(clf, X_valid, y_valid, scores_path.format(n_neigh))
+
+def run_concated(X, y, model, model_params, model_path, scores_path):
+  params = {'tol':1e-3,'max_iter':1000}
+  params.update(model_params)
+  
+  # Fit on train set.
+  clf = model(**params)
+  clf.fit(X,y)
+  joblib.dump(clf,model_path)
+
+  paths = dir_util.clean_features_paths02(istest=True)
+  y_valid = np.absolute(np.loadtxt(paths.y.format(cnst.possible_n_neigh[0]))) # abs of all ys are the same
+  Xs_valid = []
+  for n_neigh in cnst.possible_n_neigh:
+    X_valid = np.loadtxt(paths.X.format(n_neigh))
+    Xs_valid.append(X_valid)
+  X_valid = np.concatenate(Xs_valid, axis=1)
+  save_scores(clf, X_valid, y_valid, scores_path.format('all'))
+
+def run_all_concated(X, y, model, model_params, model_path, scores_path):
+  params = {'tol':1e-3,'max_iter':1000}
+  params.update(model_params)
+  
+  # Fit on train set.
+  clf = model(**params)
+  clf.fit(X,y)
+  joblib.dump(clf,model_path)
+
+  paths = dir_util.clean_features_paths02(istest=True)
+  X_valid = np.loadtxt(paths.X.format('concat_'))
+  y_valid = np.loadtxt(paths.y.format('concat_'))
+  save_scores(clf, X_valid, y_valid, scores_path.format('cat'))
 
 ################################################################################
 # Compute validation set accuracy and confusion matrix.                        #
@@ -50,9 +83,3 @@ def get_test_data():
     neighX = neigh_to_X[latt.n_neigh]
     neighy = neigh_to_y[latt.n_neigh]
     
-def relabel_wrong_neigh(y_valid, n_neigh):
-  for latt in cnst.lattices:
-    if latt.n_neigh == n_neigh:
-      continue
-    y_valid[y_valid == latt.y_label] = -1
-  return y_valid

@@ -16,6 +16,8 @@ svm_lin_ovr_path = 'a_svm_linear_ovr/'
 svm_lin_ovo_path = 'b_svm_linear_ovo/'
 svm_rbf_ovo_path = 'c_svm_rbf_ovo/'
 ocsvm_rbf_path = 'd_ocsvm_rbf/'
+all_svm_lin_ovo_path = 'e_all_svm_lin_ovo/'
+cat_svm_lin_ovo_path = 'f_cat_svm_lin_ovo/'
 
 ######### CRYSTAL STRUCTURES ########
 
@@ -28,7 +30,7 @@ lattices = [
   #Lattice(name='liq', sim_dir='03_liquid/',   cna_mod_type=0, n_neigh=None)#int(CNAModifier.Type.OTHER))
 ]
 
-possible_n_neigh = [l.n_neigh for l in lattices]
+possible_n_neigh = list(set([l.n_neigh for l in lattices]))
 
 str_to_latt = {
   'bcc': lattices[0],

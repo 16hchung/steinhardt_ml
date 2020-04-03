@@ -7,7 +7,7 @@ from scipy.special import sph_harm
 
 from ovito.data import NearestNeighborFinder
 
-from . import constants
+from . import constants as cnst, dir_util
 
 # Compute Steinhardt order parameter for all atoms in data.
 def compute_steinhardt(data,l,N_neigh):
@@ -66,4 +66,10 @@ def add_offsets(pipeline, data, scale=.06):
   pipeline.modifiers.append(pipeline_add_offsets)
   return pipeline.compute()
   
-
+def relabel_wrong_neigh(y_valid, n_neigh):
+  y_valid[y_valid < 0] = -1
+  #for latt in cnst.lattices:
+  #  if latt.n_neigh == n_neigh:
+  #    continue
+  #  y_valid[y_valid == latt.y_label] = -1
+  return y_valid

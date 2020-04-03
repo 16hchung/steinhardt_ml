@@ -10,6 +10,7 @@ n_latt = len(cnst.lattices)
 class MultiOutlierClassifier: #NOTE: Classes are 1 indexed
   def __init__(self, n_classes=n_latt, single_model=OneClassSVM, **kwargs):
     self.n_classes = n_classes
+    self.single_model = single_model
     self.cls_to_svm = [single_model(**kwargs) for _ in range(n_classes)]
     self.df_scalers = [StandardScaler(with_mean=0, with_std=1) for _ in range(n_classes)]
 
@@ -31,8 +32,10 @@ class MultiOutlierClassifier: #NOTE: Classes are 1 indexed
     return self
 
 
-  def get_params(self, *kargs):
-    return [svm.get_params(*kargs) for svm in self.cls_to_svm]
+  def get_params(self, *kargs, **kwargs):
+    return self.cls_to_svm[0].get_params(*kargs, **kwargs)
+    #return {cls:svm.get_params(*kargs, **kwargs) for cls, svm in enumerate(self.cls_to_svm)}
+    #return [svm.get_params(*kargs, **kwargs) for svm in self.cls_to_svm]
 
 
   def set_params(self, *kargs, **kwargs):

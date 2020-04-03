@@ -9,7 +9,7 @@ from util import dir_util
 class ModelTunerD(ModelTuner):
   def __init__(self):
     model = MultiOutlierClassifier
-    model_args = {'max_iter':10000}
+    model_args = {'max_iter':1000}
     #model_args = {'nu': .2}
     super().__init__(model, model_args, cnst.ocsvm_rbf_path)
     self.hyperprm_sffx = ''
@@ -17,6 +17,13 @@ class ModelTunerD(ModelTuner):
 
   def set_hyperparam(self):
     self.model_params['nu'] = .15
+
+  def gs_compute(self):
+    X,y = self.load_data()
+    gs.compute.grid_search_C_and_gamma(self.model, self.model_params, 
+        X, y, self.gs_paths, get_param_grid=gs.compute.get_nu_param_grid, c_name='nu'
+    )
+
 
 if __name__=='__main__':
   tuner = ModelTunerD()

@@ -45,35 +45,64 @@ def process_n_neigh(fnames, n_neigh=None): # if default: generate pseudo/adaptiv
   X, y = combine_lattices_data(Xs, ys)
   return X, y
 
-def shuffle_all_and_save(Xs, ys, fnames, n_neighs, scaler):
+def shuffle_all_and_save(Xs, ys, fnames, n_neighs, scaler=None, concat=False):
   shuff = shuffle(*Xs, *ys)
   Xs = shuff[:len(Xs)]
   ys = shuff[len(Xs):]
-  
-  for i, X in enumerate(Xs):
-    y = ys[i]
-    n_neigh = n_neighs[i]
-    np.savetxt(fnames.unscaledX.format(n_neigh), X, fmt='%.10e')
-    np.savetxt(fnames.y.format(n_neigh),         y, fmt='%d')
-    X = scaler.transform(X)
-    np.savetxt(fnames.X.format(n_neigh), X, fmt='%.10e')
 
-def main():
-  # do synth
-  fnames = dir_util.clean_features_paths02(pseudo=True)
-  scaler_path = dir_util.scaler_path02(pseudo=True)
-  X, y = process_n_neigh(fnames)
-  scaler, _ = scale_data(X, 'adapt_', fnames)
+  def save_single(X, unscaledX, y, suffix):
+      np.savetxt(fnames.unscaledX.format(suffix), unscaledX, fmt='%.10e')
+      np.savetxt(fnames.y.format(suffix),         y, fmt='%d')
+      np.savetxt(fnames.X.format(suffix), X, fmt='%.10e')
 
-  # do real looping thru possible n_neigh
+  if concat:
+    y = np.absolute(ys[0])
+    unscaledX = np.concatenate(Xs, axis=1)
+    X = unscaledX
+    if scaler != None:
+      scaledXs = [scaler.transform(x) for x in Xs]
+      X = np.concatenate(scaledXs, axis=1)
+    save_single(X, unscaledX, y, 'concat_')
+  else:
+    for i, unscaledX in enumerate(Xs):
+      y = ys[i]
+      n_neigh = n_neighs[i]
+      X = unscaledX if scaler == None else scaler.transform(X)
+      save_single(X, unscaledX, y, n_neigh)
+  return Xs, ys
+
+def process_set(fnames, scaler=None, scaler_path=None, concat=False):
   Xs = []
   ys = []
   for neigh in cnst.possible_n_neigh:
-    fnames = dir_util.clean_features_paths02(istest=True)
     X, y = process_n_neigh(fnames, neigh)
+
+    incorrect_labels = [lbl for lbl, latt in cnst.lbl_to_latt.items() if latt.n_neigh != neigh]
+    y[np.isin(y, incorrect_labels)] *= -1
+
     Xs.append(X)
     ys.append(y)
-  shuffle_all_and_save(Xs, ys, fnames, cnst.possible_n_neigh, scaler)
+  if scaler == None and scaler_path != None:
+    scaler, _ = scale_data(np.row_stack(Xs), 'all_', fnames)
+  Xs,ys = shuffle_all_and_save(Xs, ys, fnames, cnst.possible_n_neigh, scaler, concat)
+  return Xs, ys, scaler
+
+def main():
+  import argparse
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--cat', action='store_true')
+  args = parser.parse_args()
+
+  # do synth
+  print('processing synth training data')
+  fnames = dir_util.clean_features_paths02(pseudo=True)
+  scaler_path = dir_util.scaler_path02(pseudo=True)
+  Xs, ys, scaler = process_set(fnames, scaler_path=scaler_path, concat=args.cat)
+
+  # do real looping thru possible n_neigh
+  print('processing real test data')
+  fnames = dir_util.clean_features_paths02(istest=True)
+  process_set(fnames, scaler=scaler, concat=args.cat)
     
 if __name__=='__main__':
   main()

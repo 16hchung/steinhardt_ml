@@ -20,7 +20,9 @@ class ModelTuner:
     self.df_paths = self.all_paths.decision_fxn
     # this class method options
     self.should_relbl_wrong_neigh = False
+    self.concat_test = False
     self.use_pretrained = False
+    self.train_concated = False
 
   def cmdline_main(self):
     from argparse import ArgumentParser
@@ -87,7 +89,13 @@ class ModelTuner:
   def ms_compute(self):
     X,y = self.load_data()
     self.set_hyperparam()
-    ms.compute.run(X,y, self.model, self.model_params, self.ms_paths.model_tmplt.format(hyperprm_sffx=self.hyperprm_sffx), self.ms_paths.scores, relbl_wrong_neigh=self.should_relbl_wrong_neigh)
+    kargs = [X,y, self.model, self.model_params, self.ms_paths.model_tmplt.format(hyperprm_sffx=self.hyperprm_sffx), self.ms_paths.scores]
+    if self.train_concated:
+      ms.compute.run_all_concated(*kargs)
+    elif self.concat_test:
+      ms.compute.run_concated(*kargs)
+    else:
+      ms.compute.run(*kargs)
 
   def df_compute(self):
     X,y = self.load_data()
