@@ -29,7 +29,7 @@ def get_nu_param_grid():
 
 def grid_search_C(model, X, y, param_grid, val_curve_path, c_name='C', best_params_path=None):
   # Perform grid search.
-  clf = GridSearchCV(model, param_grid, cv=5, n_jobs=-2, iid=False, return_train_score=True)
+  clf = GridSearchCV(model, param_grid, cv=5, n_jobs=-2, iid=False, return_train_score=True, verbose=2)
   clf.fit(X,y)
   C_arr = param_grid[0][c_name]
 
@@ -54,7 +54,7 @@ dflt_model_args = {'max_iter':1000, 'tol':1e-3}
 def grid_search_C_only(model, model_args, X, y, gs_paths):
   C, param_grid = get_C_param_grid()
   model_args.update(dflt_model_args) # merge arguments
-  grid_search_C(model(**model_args), X, y, param_grid, gs_paths.val_curve_data_tmplt.format(''), gs_paths.best_params_data)
+  grid_search_C(model(**model_args), X, y, param_grid, gs_paths.val_curve_data_tmplt.format(''), best_params_path=gs_paths.best_params_data)
 
 def grid_search_C_and_gamma(model, model_args, X, y, gs_paths, get_param_grid=None, c_name='C'):
   if get_param_grid == None:

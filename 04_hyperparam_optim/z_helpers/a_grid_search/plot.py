@@ -28,7 +28,7 @@ def plot_validation(param_name, data_path, fig_path, add_custom_plot_elements=la
   ax.set_ylabel(r'Accuracy')
   ax.set_xscale('log')
   ax.set_xlim(param.min(),param.max())
-  ax.set_ylim(0.95,1)
+  ax.set_ylim(0.7,1)
   ax.legend(loc='lower right')
 
   # Save figure.

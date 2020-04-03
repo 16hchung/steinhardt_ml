@@ -25,6 +25,7 @@ class AllDataLinearSVCLayered(LinearSVC):
       currX = X[:, i*n_feat : (i+1)*n_feat]
       y = super().predict(currX)
       ys.append(y)
-    y[(ys[0] < 0) | (ys[1] < 0)] = -1
-    y[(ys[0] != ys[1]) & (ys[0] > 0) & (ys[1] > 0)] = -2
+    y = np.maximum(*ys)
+    y[(ys[0] < 0) & (ys[1] < 0)] = -1
+    y[(ys[0] > 0) & (ys[1] > 0)] = -2
     return y

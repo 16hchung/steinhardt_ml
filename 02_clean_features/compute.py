@@ -67,7 +67,7 @@ def shuffle_all_and_save(Xs, ys, fnames, n_neighs, scaler=None, concat=False):
     for i, unscaledX in enumerate(Xs):
       y = ys[i]
       n_neigh = n_neighs[i]
-      X = unscaledX if scaler == None else scaler.transform(X)
+      X = unscaledX if scaler == None else scaler.transform(unscaledX)
       save_single(X, unscaledX, y, n_neigh)
   return Xs, ys
 

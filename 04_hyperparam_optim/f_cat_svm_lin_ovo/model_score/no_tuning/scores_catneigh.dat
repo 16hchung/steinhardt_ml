@@ -1,4 +1,4 @@
-Accuracy on validation set: 92.58
+Accuracy on validation set: 92.59
 
               precision    recall  f1-score   support
 
@@ -11,6 +11,6 @@ Accuracy on validation set: 92.58
 weighted avg       0.93      0.93      0.93     28512
 
 Confusion Matrix:
-[[9116   35  353]
+[[9115   37  352]
  [  55 8811  638]
- [ 345  691 8468]]
+ [ 348  684 8472]]
