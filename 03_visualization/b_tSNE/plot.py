@@ -22,8 +22,8 @@ def plot_one_tSNE(X_tmplt, fig_tmplt, ps_y, y, perplexity):
   # Plot.
   for latt in cnst.lattices:
     y_lbl = latt.y_label
-    ax.plot(tSNE[y==y_lbl][:,0],       tSNE[y==y_lbl][:,1],       latt.pt_fmt,    alpha=.3, label=latt.name, mew=0)
-    ax.plot(ps_tSNE[ps_y==y_lbl][:,0], ps_tSNE[ps_y==y_lbl][:,1], latt.ps_pt_fmt, alpha=.3, label='pseudo '+latt.name, mew=0)
+    ax.plot(tSNE[y==y_lbl][:,0],       tSNE[y==y_lbl][:,1],       latt.pt_fmt,    marker='o', alpha=.3, ls='', label=latt.name, mew=0)
+    ax.plot(ps_tSNE[ps_y==y_lbl][:,0], ps_tSNE[ps_y==y_lbl][:,1], latt.ps_pt_fmt, marker='o', alpha=.3, ls='', label='pseudo '+latt.name, mew=0)
    
   # Add details.
   ax.set_xticks([])
@@ -52,7 +52,7 @@ def main():
   y    = np.loadtxt(data_paths.y)
   ps_y = np.loadtxt(ps_data_paths.y)
   plot_many_tSNE(ps_y, y, data_paths, withPCA=False)
-  plot_many_tSNE(ps_y, y, data_paths, withPCA=True)
+  #plot_many_tSNE(ps_y, y, data_paths, withPCA=True)
 
 if __name__=='__main__':
   main()

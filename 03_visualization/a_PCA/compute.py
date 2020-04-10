@@ -6,9 +6,9 @@ from util import dir_util
 def main():
   # Load data from example files.
   ps_test_names = dir_util.clean_features_paths02(pseudo=True)
-  test_names = dir_util.clean_features_paths02(istest=True)
-  ps_X = np.loadtxt(ps_test_names.X)
-  X = np.loadtxt(test_names.X)
+  test_names    = dir_util.clean_features_paths02(istest=True)
+  ps_X = np.loadtxt(ps_test_names.X.format('concat_'))
+  X    = np.loadtxt(test_names.X.format('concat_'))
 
   # Compute PCA from  and save first two components.
   pca = PCA()

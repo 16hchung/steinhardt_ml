@@ -23,8 +23,9 @@ class ModelTunerF(ModelTuner):
     return X,y
 
   def set_hyperparam(self):
-    self.model_params['C'] = .1
-    self.hyperprm_sffx = '_C_1e-1'
+    pass
+    #self.model_params['C'] = .1
+    #self.hyperprm_sffx = '_C_1e-1'
 
 
 if __name__=='__main__':

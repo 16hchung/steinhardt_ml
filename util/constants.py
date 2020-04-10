@@ -21,23 +21,29 @@ cat_svm_lin_ovo_path = 'f_cat_svm_lin_ovo/'
 
 ######### CRYSTAL STRUCTURES ########
 
-Lattice= namedtuple('CrystalStruct', 'name, sim_dir, y_label, n_neigh, pt_fmt, ps_pt_fmt')
+Lattice= namedtuple('CrystalStruct', 'name, sim_dir, dflt_temp, y_label, n_neigh, pt_fmt, ps_pt_fmt')
 
 lattices = [
-  Lattice(name='bcc', sim_dir='02_crystals/', y_label=3, n_neigh=8 , pt_fmt='bs', ps_pt_fmt='cP'),#int(CNAModifier.Type.BCC)),
-  Lattice(name='fcc', sim_dir='02_crystals/', y_label=1, n_neigh=12, pt_fmt='ro', ps_pt_fmt='m.'),#int(CNAModifier.Type.FCC)),
-  Lattice(name='hcp', sim_dir='02_crystals/', y_label=2, n_neigh=12, pt_fmt='g^', ps_pt_fmt='y*'),#int(CNAModifier.Type.HCP)),
+  Lattice(name='fcc', sim_dir='02_crystals/', dflt_temp=900, y_label=1, n_neigh=12,  pt_fmt='ro', ps_pt_fmt='ko'),#int(CNAModifier.Type.FCC)),
+  Lattice(name='hcp', sim_dir='02_crystals/', dflt_temp=1500, y_label=2, n_neigh=12, pt_fmt='go', ps_pt_fmt='#6a0dad'),#int(CNAModifier.Type.HCP)),
+  Lattice(name='bcc', sim_dir='02_crystals/', dflt_temp=1500, y_label=3, n_neigh=8 , pt_fmt='bo', ps_pt_fmt='#ff4500'),#int(CNAModifier.Type.BCC)),
+  Lattice(name='hd',  sim_dir='02_crystals/', dflt_temp=220, y_label=4, n_neigh=4,   pt_fmt='mo', ps_pt_fmt='#ffb6c1'),#int(CNAModifier.Type.HCP)),
+  Lattice(name='cd',  sim_dir='02_crystals/', dflt_temp=1500, y_label=5, n_neigh=4,  pt_fmt='yo', ps_pt_fmt='#008080'),#int(CNAModifier.Type.HCP)),
+  Lattice(name='sc',  sim_dir='02_crystals/', dflt_temp=500, y_label=6, n_neigh=6,   pt_fmt='co', ps_pt_fmt='#800000'),#int(CNAModifier.Type.HCP)),
   #Lattice(name='liq', sim_dir='03_liquid/',   cna_mod_type=0, n_neigh=None)#int(CNAModifier.Type.OTHER))
 ]
 
 possible_n_neigh = list(set([l.n_neigh for l in lattices]))
 
 str_to_latt = {
-  'bcc': lattices[0],
-  'fcc': lattices[1],
-  'hcp': lattices[2],
+  'fcc': lattices[0],
+  'hcp': lattices[1],
+  'bcc': lattices[2],
+  'hd':  lattices[3],
+  'cd':  lattices[4],
+  'sc':  lattices[5],
 }
 
 lbl_to_latt = {l.y_label : l for l in lattices}
 
-n_features = 30
+n_features = 15

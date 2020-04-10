@@ -2,6 +2,8 @@ __pycache__/
 *.dat
 *.data
 *.gz
+**/*.gz
+*/dump
 *.log
 .*.swp
 *.vim

@@ -5,10 +5,13 @@ from pathlib import Path
 blank = '{}'
 pseudo_pre = 'pseudo_'
 
-def dump_path_for_lattice00(latt, perfect=False):
-  perf_suffix = '_perfect' if perfect else ''
-  dump_tmpl = 'data/dump/dump_{}{}_{}.dat'
-  return make_dirs(cnst.md_path + latt.sim_dir + dump_tmpl.format(latt.name, perf_suffix, blank))[0]
+def dump_path_for_lattice00(latt, perfect=False, temp=None):
+  temp = temp if temp != None else latt.dflt_temp
+  perf_suffix = '_perfect' if perfect else '_{}K'.format(temp)
+  perf_prefix = 'perfect_' if perfect else ''
+  ext = 'dat' if perfect else 'gz'
+  dump_tmpl = '{}data/dump/dump_{}{}_{}.{}'#.dat'
+  return make_dirs(cnst.md_path + latt.sim_dir + dump_tmpl.format(perf_prefix, latt.name, perf_suffix, blank, ext))[0]
 
 def all_features_path01(latt, pseudo=False):
   pseudo_prefix = pseudo_pre if pseudo else ''

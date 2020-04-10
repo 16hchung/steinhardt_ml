@@ -10,7 +10,7 @@ from util import dir_util
 default_pseudo = .3
 
 def compute_real_n_neigh(latt, l, N_stein, n_neigh):
-  steps = np.arange(10000, 20000+1000, 1000)
+  steps = np.arange(10000, 100000+10000, 10000)
   # Iterate over steps.
   X = np.zeros((0, N_stein))
   for ts in tqdm(steps):
@@ -59,6 +59,7 @@ def main():
             else None
 
   lattices = cnst.lattices if args.latt == None else [cnst.str_to_latt[args.latt]]
+  lattices = cnst.lattices[4:]
   for latt in lattices:
     print(latt.name)
     if pseudo_param != None or args.comp_both:

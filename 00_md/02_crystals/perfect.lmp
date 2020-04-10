@@ -10,6 +10,7 @@
   region        sim_box block 0 ${n} 0 ${n} 0 ${n}
   create_box    1 sim_box
   create_atoms  1 box
+  if "${latlog} == hd" then "lattice ${lat} $(3/8)"
 
 # Interatomic potential information.
   pair_style       lj/cut 2.5
@@ -19,6 +20,6 @@
   mass             1 1
 
   # Run simulation.
-  dump             d1 all custom ${dt_d} data/dump/dump_${lat}${sfx}_*.dat &
+  dump             d1 all custom ${dt_d} new_data/dump/dump_${latlog}${sfx}_*.dat &
                    id type x y z
   run              0

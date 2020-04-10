@@ -4,20 +4,21 @@ from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 
 from util import dir_util
+from util import constants as cnst
 
 ##########################################################################
 # Input parameters and setup.                                            #
 ##########################################################################
 
-perplexity_list = [10, 50, 200, 500, 1000]
+perplexity_list = [10, 50, 400, 1000]
 default_perplexity = 10
-M = 1000 # Number of data points used in tSNE.
+M = 200*len(cnst.lattices)# Number of data points used in tSNE.
 
 def input_params_and_setup(perplexity, paths, pseudo=True):
   # Load data from example files and limit data points.
-  fnames = dir_util.clean_features_paths02(pseudo=pseudo)
-  X = np.loadtxt(fnames.X)
-  y = np.loadtxt(fnames.y)
+  fnames = dir_util.clean_features_paths02(istest=not pseudo, pseudo=pseudo)
+  X = np.loadtxt(fnames.X.format('concat_'))
+  y = np.loadtxt(fnames.y.format('concat_'))
   X = X[:M]
   y = y[:M]
 
@@ -60,7 +61,7 @@ def main(perplexity=default_perplexity):
   ps_X, ps_y = input_params_and_setup(perplexity, ps_paths, pseudo=True)
   all_X = np.row_stack((X, ps_X))
   compute_tsne(all_X, perplexity, paths)
-  compute_tsne_with_PCA(all_X, perplexity, paths)
+  #compute_tsne_with_PCA(all_X, perplexity, paths)
 
 def main_many():
   for p in tqdm(perplexity_list):
