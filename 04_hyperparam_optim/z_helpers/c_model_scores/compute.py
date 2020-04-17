@@ -67,7 +67,7 @@ def run_all_concated(X, y, model, model_params, model_path, scores_path):
   y_valid = y_valid[:n_test*len(cnst.lattices)]
   save_scores(clf, X_valid, y_valid, scores_path.format('cat_'))
 
-  scores = {'latt': [], 'temp': [], 'accuracy': []}
+  scores = {'latt': [], 'temp': [], 'ML': []}
   for latt in cnst.lattices:
     for temp in range(latt.low_temp, latt.high_temp+latt.step_temp, latt.step_temp):
       paths = dir_util.clean_features_paths02(istest=True, lattice=latt, temp=temp)
@@ -75,9 +75,9 @@ def run_all_concated(X, y, model, model_params, model_path, scores_path):
       y_valid = np.ones(X_valid.shape[0]) * latt.y_label
       scores['latt'].append(latt.name)
       scores['temp'].append(temp)
-      scores['accuracy'].append(clf.score(X_valid, y_valid))
+      scores['ML'].append(clf.score(X_valid, y_valid))
   df = pd.DataFrame(data=scores)
-  df.to_csv(scores_path.format('cat_byT_'))
+  df.to_csv(scores_path.format('cat_byT_'), index=False)
 
 
 ################################################################################

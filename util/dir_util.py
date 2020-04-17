@@ -127,7 +127,13 @@ def hyperparam_all_paths04(model_dir):
   decision_fxn= decision_fxn_paths(model_dir       , tmplt)
   return AllPaths(grid_search, learning_curve, model_score, decision_fxn)
 
-
+def model_exam_paths06(model_dir):
+  tmplt = '{}{}{}{}'.format(cnst.model_exam_path, blank, blank, blank)
+  other_scores = tmplt.format('',        'data/', 'other_accuracies.csv')
+  model_scores = tmplt.format(model_dir, 'data/', 'all_scores.csv')
+  fig_tmplt    = tmplt.format(model_dir, 'fig/',  '{}_accByT.png')
+  Paths = namedtuple('Paths', 'other_scores, model_scores, fig_tmplt')
+  return Paths(*make_dirs(other_scores, model_scores, fig_tmplt)) 
 
 
 ##################### HELPERS ##########################
