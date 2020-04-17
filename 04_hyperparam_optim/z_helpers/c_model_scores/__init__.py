@@ -1,1 +1,1 @@
-from . import compute
+from . import compute, plot

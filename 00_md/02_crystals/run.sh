@@ -1,8 +1,10 @@
 #lat=(fcc bcc hcp)
-lat=(fcc hd cd sc)
-latlamp=(fcc hcp diamond sc)
+#lat=(fcc hd cd sc)
+#latlamp=(fcc hcp diamond sc)
+lat=(hd)
+latlamp=(hcp)
 #n=(6 8 6)
-n=(10 10 9 15)
+n=(8)
 lmmps=perfect
 #lmmps=real
 suffix=_perfect

@@ -9,6 +9,7 @@ __pycache__/
 *.vim
 
 old_files/
+**/*old*/
 last
 
 !*/best_parameters.dat

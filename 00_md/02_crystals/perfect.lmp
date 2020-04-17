@@ -10,7 +10,8 @@
   region        sim_box block 0 ${n} 0 ${n} 0 ${n}
   create_box    1 sim_box
   create_atoms  1 box
-  if "${latlog} == hd" then "lattice ${lat} $(3/8)"
+  if "${latlog} == hd" then "lattice ${lat} ${rho} origin 0 0 $(3/8)"
+  if "${latlog} == hd" then "create_atoms 1 box"
 
 # Interatomic potential information.
   pair_style       lj/cut 2.5

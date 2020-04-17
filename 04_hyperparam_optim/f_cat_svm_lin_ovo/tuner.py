@@ -10,7 +10,7 @@ from util import dir_util
 
 class ModelTunerF(ModelTuner):
   def __init__(self):
-    model_args = {'max_iter':1000, 'class_weight':'balanced'}
+    model_args = {'max_iter':10000, 'class_weight':'balanced'}
     #model_args = {'nu': .2}
     super().__init__(LinearSVC, model_args, cnst.cat_svm_lin_ovo_path)
     self.hyperprm_sffx = ''

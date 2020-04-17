@@ -3,17 +3,20 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 import joblib
+from tqdm import tqdm
 
 from util import dir_util
 from util import constants as cnst
 
+n_test_pts = 10000
+
 # Load features and balance classes.
-def load_and_balance(n_neigh=None):
+def load_and_balance(pseudo, n_neigh=None):
   Xs = {}
   for latt in cnst.lattices:
     # default is to use pseudo data
     neigh = latt.n_neigh if n_neigh == None else n_neigh
-    Xs[latt] = np.loadtxt(dir_util.all_features_path01(latt, pseudo=n_neigh == None).format(neigh))
+    Xs[latt] = np.loadtxt(dir_util.all_features_path01(latt, pseudo=pseudo).format(neigh))
   N_min = min([x.shape[0] for x in Xs.values()])
   Xs = {l:x[:N_min] for l,x in Xs.items()}
   return Xs
@@ -39,20 +42,24 @@ def scale_data(X, n_neigh, fnames, scaler=None):
   X = scaler.transform(X)
   return scaler, X
 
-def process_n_neigh(fnames, n_neigh=None): # if default: generate pseudo/adaptive training 
-  Xs = load_and_balance(n_neigh)
-  ys = make_labels(Xs)
-  X, y = combine_lattices_data(Xs, ys)
+def process_n_neigh(fnames, pseudo, n_neigh=None, latt=None, temp=None): # if default: generate pseudo/adaptive training 
+  if latt==None or temp==None or pseudo:
+    Xs = load_and_balance(pseudo, n_neigh)
+    ys = make_labels(Xs)
+    X, y = combine_lattices_data(Xs, ys)
+  else:
+    X = np.loadtxt(dir_util.all_features_path01(latt, pseudo=pseudo, temp=temp).format(n_neigh))
+    y = np.ones(X.shape[0]) * latt.y_label
   return X, y
 
-def shuffle_all_and_save(Xs, ys, fnames, n_neighs, scaler=None, concat=False):
+def shuffle_all_and_save(Xs, ys, fnames, n_neighs, scaler=None, concat=False, save_y=True):
   shuff = shuffle(*Xs, *ys)
   Xs = shuff[:len(Xs)]
   ys = shuff[len(Xs):]
 
   def save_single(X, unscaledX, y, suffix):
       np.savetxt(fnames.unscaledX.format(suffix), unscaledX, fmt='%.10e')
-      np.savetxt(fnames.y.format(suffix),         y, fmt='%d')
+      if save_y: np.savetxt(fnames.y.format(suffix),         y, fmt='%d')
       np.savetxt(fnames.X.format(suffix), X, fmt='%.10e')
 
   if concat:
@@ -71,11 +78,11 @@ def shuffle_all_and_save(Xs, ys, fnames, n_neighs, scaler=None, concat=False):
       save_single(X, unscaledX, y, n_neigh)
   return Xs, ys
 
-def process_set(fnames, scaler=None, scaler_path=None, concat=False):
+def process_set(fnames, pseudo=False, scaler=None, scaler_path=None, concat=False, latt=None, temp=None):
   Xs = []
   ys = []
   for neigh in cnst.possible_n_neigh:
-    X, y = process_n_neigh(fnames, neigh)
+    X, y = process_n_neigh(fnames, pseudo, neigh, latt, temp)
 
     incorrect_labels = [lbl for lbl, latt in cnst.lbl_to_latt.items() if latt.n_neigh != neigh]
     y[np.isin(y, incorrect_labels)] *= -1
@@ -84,7 +91,7 @@ def process_set(fnames, scaler=None, scaler_path=None, concat=False):
     ys.append(y)
   if scaler == None and scaler_path != None:
     scaler, _ = scale_data(np.row_stack(Xs), 'all_', fnames)
-  Xs,ys = shuffle_all_and_save(Xs, ys, fnames, cnst.possible_n_neigh, scaler, concat)
+  Xs,ys = shuffle_all_and_save(Xs, ys, fnames, cnst.possible_n_neigh, scaler, concat, save_y=temp==None)
   return Xs, ys, scaler
 
 def main():
@@ -97,12 +104,19 @@ def main():
   print('processing synth training data')
   fnames = dir_util.clean_features_paths02(pseudo=True)
   scaler_path = dir_util.scaler_path02(pseudo=True)
-  Xs, ys, scaler = process_set(fnames, scaler_path=scaler_path, concat=args.cat)
+  Xs, ys, scaler = process_set(fnames, pseudo=True, scaler_path=scaler_path, concat=args.cat)
 
   # do real looping thru possible n_neigh
   print('processing real test data')
   fnames = dir_util.clean_features_paths02(istest=True)
-  process_set(fnames, scaler=scaler, concat=args.cat)
+  process_set(fnames, pseudo=False, scaler=scaler, concat=args.cat)
+
+  print('processing by latt and temp')
+  scaler = joblib.load(dir_util.scaler_path02(pseudo=True).format('all_'))
+  for latt in tqdm(cnst.lattices):
+    for temp in range(latt.low_temp, latt.high_temp+latt.step_temp, latt.step_temp):
+      fnames = dir_util.clean_features_paths02(istest=True, lattice=latt, temp=temp)
+      process_set(fnames, pseudo=False, scaler=scaler, concat=args.cat, latt=latt, temp=temp)
     
 if __name__=='__main__':
   main()

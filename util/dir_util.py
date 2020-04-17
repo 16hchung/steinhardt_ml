@@ -13,18 +13,21 @@ def dump_path_for_lattice00(latt, perfect=False, temp=None):
   dump_tmpl = '{}data/dump/dump_{}{}_{}.{}'#.dat'
   return make_dirs(cnst.md_path + latt.sim_dir + dump_tmpl.format(perf_prefix, latt.name, perf_suffix, blank, ext))[0]
 
-def all_features_path01(latt, pseudo=False):
+def all_features_path01(latt, pseudo=False, temp=None):
+  temp = '' if temp == None else '_{}K'.format(temp)
   pseudo_prefix = pseudo_pre if pseudo else ''
-  return make_dirs('{}data/X/{}/X_{}{}_neigh.dat'.format(cnst.raw_feat_path, latt.name, pseudo_prefix, blank))[0]
+  return make_dirs('{}data/X/{}/X_{}{}_neigh{}.dat'.format(cnst.raw_feat_path, latt.name, pseudo_prefix, blank, temp))[0]
 
 def synth_carteasian_path01(latt):
   return make_dirs('{}data/synth_cart/{}.dat'.format(cnst.raw_feat_path, latt.name))[0]
 
-def clean_features_paths02(istest=False, pseudo=False):
+def clean_features_paths02(istest=False, pseudo=False, lattice=None, temp=None):
   pseudo_prefix = pseudo_pre if pseudo else ''
   split_lbl = 'test' if istest else 'train'
-  tmplt = '{par_dir}data/{ps}{blank}{blank}_{split_lbl}_{blank}neigh.dat'.format(
-    ps=pseudo_prefix, par_dir=cnst.clean_feat_path, blank=blank, split_lbl=split_lbl
+  lattice = '' if lattice == None else '{}/'.format(lattice.name)
+  temp    = '' if temp    == None else '_{}K'.format(temp)
+  tmplt = '{par_dir}data/{lattice}{ps}{blank}{blank}_{split_lbl}_{blank}neigh{temp}.dat'.format(
+    ps=pseudo_prefix, par_dir=cnst.clean_feat_path, lattice=lattice, blank=blank, split_lbl=split_lbl, temp=temp
   )
 
   unscaledX = tmplt.format('X', '_unscaled', blank)
@@ -104,8 +107,9 @@ def model_score_paths04(model_dir, tmplt):
   subdir = 'model_score/'
   model = tmplt.format(subdir=subdir, fname='model{hyperprm_sffx}.pkl')
   scores = tmplt.format(subdir=subdir, fname='scores_{}neigh.dat')
-  Paths = namedtuple('Paths', 'model_tmplt scores')
-  return Paths(*make_dirs(model, scores))
+  plotT = tmplt.format(subdir=subdir, fname='accuracy_byT.png')
+  Paths = namedtuple('Paths', 'model_tmplt scores plotT')
+  return Paths(*make_dirs(model, scores, plotT))
 
 def decision_fxn_paths(model_dir, tmplt):
   subdir = 'decision_fxn/'

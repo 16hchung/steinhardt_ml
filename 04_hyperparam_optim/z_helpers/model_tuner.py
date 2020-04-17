@@ -50,6 +50,8 @@ class ModelTuner:
       self.lc_plot()
     elif stage == 'ms1':
       self.ms_compute()
+    elif stage == 'ms2':
+      self.ms_plot()
     elif stage == 'df1':
       self.df_compute()
     elif stage == 'df2':
@@ -96,6 +98,11 @@ class ModelTuner:
       ms.compute.run_concated(*kargs)
     else:
       ms.compute.run(*kargs)
+
+  def ms_plot(self):
+    if not self.train_concated:
+      pass
+    ms.plot.plot_concat_by_temp(self.ms_paths.scores, self.ms_paths.plotT)
 
   def df_compute(self):
     X,y = self.load_data()

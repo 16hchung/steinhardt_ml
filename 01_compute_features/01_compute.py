@@ -12,12 +12,18 @@ default_pseudo = .3
 def compute_real_n_neigh(latt, l, N_stein, n_neigh):
   steps = np.arange(10000, 100000+10000, 10000)
   # Iterate over steps.
-  X = np.zeros((0, N_stein))
-  for ts in tqdm(steps):
-    pipeline = import_file(dir_util.dump_path_for_lattice00(latt).format(ts))
-    data = pipeline.compute()
-    X = np.vstack((X, calc.compute_steinhardt(data, l, n_neigh)))
+  Xs = []
+  for temp in tqdm(range(latt.low_temp, latt.high_temp + latt.step_temp, latt.step_temp)):
+    X = np.zeros((0, N_stein))
+    for ts in tqdm(steps):
+      pipeline = import_file(dir_util.dump_path_for_lattice00(latt, temp=temp).format(ts))
+      data = pipeline.compute()
+      X = np.vstack((X, calc.compute_steinhardt(data, l, n_neigh)))
+    np.savetxt(dir_util.all_features_path01(latt, temp=temp).format(n_neigh), X, fmt='%.10e')
+    Xs.append(X)
+  X = np.vstack(Xs)
   np.savetxt(dir_util.all_features_path01(latt).format(n_neigh), X, fmt='%.10e')
+
 
 def compute_real(latt, l, N_stein):
   for n_neigh in cnst.possible_n_neigh:
@@ -59,7 +65,6 @@ def main():
             else None
 
   lattices = cnst.lattices if args.latt == None else [cnst.str_to_latt[args.latt]]
-  lattices = cnst.lattices[4:]
   for latt in lattices:
     print(latt.name)
     if pseudo_param != None or args.comp_both:

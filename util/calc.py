@@ -73,3 +73,4 @@ def relabel_wrong_neigh(y_valid, n_neigh):
   #    continue
   #  y_valid[y_valid == latt.y_label] = -1
   return y_valid
+

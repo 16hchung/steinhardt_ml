@@ -1,7 +1,9 @@
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
+from sklearn.utils import shuffle
 import joblib
 
 from util import dir_util
@@ -55,10 +57,28 @@ def run_all_concated(X, y, model, model_params, model_path, scores_path):
   clf.fit(X,y)
   joblib.dump(clf,model_path)
 
+  n_test = 10000
   paths = dir_util.clean_features_paths02(istest=True)
   X_valid = np.loadtxt(paths.X.format('concat_'))
   y_valid = np.loadtxt(paths.y.format('concat_'))
-  save_scores(clf, X_valid, y_valid, scores_path.format('cat'))
+  # limit number of test points for overall accuracy
+  X_valid, y_valid = shuffle(X_valid, y_valid)
+  X_valid = X_valid[:n_test*len(cnst.lattices)]
+  y_valid = y_valid[:n_test*len(cnst.lattices)]
+  save_scores(clf, X_valid, y_valid, scores_path.format('cat_'))
+
+  scores = {'latt': [], 'temp': [], 'accuracy': []}
+  for latt in cnst.lattices:
+    for temp in range(latt.low_temp, latt.high_temp+latt.step_temp, latt.step_temp):
+      paths = dir_util.clean_features_paths02(istest=True, lattice=latt, temp=temp)
+      X_valid = shuffle(np.loadtxt(paths.X.format('concat_')))[:n_test]
+      y_valid = np.ones(X_valid.shape[0]) * latt.y_label
+      scores['latt'].append(latt.name)
+      scores['temp'].append(temp)
+      scores['accuracy'].append(clf.score(X_valid, y_valid))
+  df = pd.DataFrame(data=scores)
+  df.to_csv(scores_path.format('cat_byT_'))
+
 
 ################################################################################
 # Compute validation set accuracy and confusion matrix.                        #
