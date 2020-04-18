@@ -2,6 +2,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
+from sklearn.utils import shuffle
 
 from util import dir_util
 from util import constants as cnst
@@ -19,6 +20,7 @@ def input_params_and_setup(perplexity, paths, pseudo=True):
   fnames = dir_util.clean_features_paths02(istest=not pseudo, pseudo=pseudo)
   X = np.loadtxt(fnames.X.format('concat_'))
   y = np.loadtxt(fnames.y.format('concat_'))
+  X,y = shuffle(X,y)
   X = X[:M]
   y = y[:M]
 
@@ -59,6 +61,7 @@ def main(perplexity=default_perplexity):
   
   X, y       = input_params_and_setup(perplexity, paths,    pseudo=False)
   ps_X, ps_y = input_params_and_setup(perplexity, ps_paths, pseudo=True)
+  #TODO make sure that ps_y is all negative
   all_X = np.row_stack((X, ps_X))
   compute_tsne(all_X, perplexity, paths)
   #compute_tsne_with_PCA(all_X, perplexity, paths)

@@ -17,7 +17,8 @@ class ModelTunerF(ModelTuner):
     self.train_concated = True
 
   def load_data(self):
-    paths = dir_util.clean_features_paths02(pseudo=True)
+    paths = dir_util.clean_features_paths02(istest=True)
+    #paths = dir_util.clean_features_paths02(pseudo=True)
     X = np.loadtxt(paths.X.format('concat_'))
     y = np.loadtxt(paths.y.format('concat_'))
     return X,y
