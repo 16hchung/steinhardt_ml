@@ -118,8 +118,9 @@ def decision_fxn_paths(model_dir, tmplt):
   Paths = namedtuple('Paths', 'data_tmplt fig_tmplt')
   return Paths(*make_dirs(data_tmplt, fig_tmplt))
 
-def hyperparam_all_paths04(model_dir):
-  tmplt = '{}{}{}{}'.format(cnst.hyperparam_optim_path, model_dir, '{subdir}', '{fname}')
+def hyperparam_all_paths04(model_dir, baseline=False):
+  baseline_dir = 'baseline/' if baseline else ''
+  tmplt = '{}{}{}{}{}'.format(cnst.hyperparam_optim_path, model_dir, '{subdir}', baseline_dir, '{fname}')
   AllPaths = namedtuple('AllPaths', 'grid_search learning_curve model_score decision_fxn')
   grid_search = grid_search_paths04(model_dir      , tmplt)
   learning_curve = learning_curve_paths04(model_dir, tmplt)
@@ -127,11 +128,12 @@ def hyperparam_all_paths04(model_dir):
   decision_fxn= decision_fxn_paths(model_dir       , tmplt)
   return AllPaths(grid_search, learning_curve, model_score, decision_fxn)
 
-def model_exam_paths06(model_dir):
-  tmplt = '{}{}{}{}'.format(cnst.model_exam_path, blank, blank, blank)
-  other_scores = tmplt.format('',        'data/', 'other_accuracies.csv')
-  model_scores = tmplt.format(model_dir, 'data/', 'all_scores.csv')
-  fig_tmplt    = tmplt.format(model_dir, 'fig/',  '{}_accByT.png')
+def model_exam_paths06(model_dir, baseline=False):
+  baseline_prefix = 'baseline_' if baseline else ''
+  tmplt = '{}{}{}{}{}'.format(cnst.model_exam_path, blank, blank, blank, blank)
+  other_scores = tmplt.format('',        'data/', '', 'other_accuracies.csv')
+  model_scores = tmplt.format(model_dir, 'data/', baseline_prefix, 'all_scores.csv')
+  fig_tmplt    = tmplt.format(model_dir, 'fig/',  baseline_prefix, '{}_accByT.png')
   Paths = namedtuple('Paths', 'other_scores, model_scores, fig_tmplt')
   return Paths(*make_dirs(other_scores, model_scores, fig_tmplt)) 
 

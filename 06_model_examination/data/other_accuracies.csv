@@ -89,3 +89,15 @@ hd,  280,None,  0.9725,0.9873,0.9998,None
 hd,  300,None,  0.9513,0.9781,0.9994,None
 hd,  320,None,  0.9400,0.9630,0.9990,None
 hd,  340,None,  0.8821,0.9398,0.9968,None
+sc,  100,None,  None,  None,  1.0000,None 
+sc,  200,None,  None,  None,  1.0000,None 
+sc,  300,None,  None,  None,  1.0000,None 
+sc,  400,None,  None,  None,  1.0000,None 
+sc,  500,None,  None,  None,  1.0000,None 
+sc,  600,None,  None,  None,  0.9999,None 
+sc,  700,None,  None,  None,  0.9998,None 
+sc,  800,None,  None,  None,  0.9986,None 
+sc,  900,None,  None,  None,  0.9950,None 
+sc, 1000,None,  None,  None,  0.9828,None 
+sc, 1100,None,  None,  None,  0.9539,None 
+sc, 1200,None,  None,  None,  0.8836,None 

@@ -30,7 +30,7 @@ def compute_real(latt, l, N_stein):
     compute_real_n_neigh(latt, l, N_stein, n_neigh)
 
 def compute_synthetic_n_neigh(latt, l, N_stein, pseudo, n_neigh):
-  scales = np.linspace(.01, pseudo, num=10)
+  scales = np.linspace(.01, pseudo, num=30)
   X = np.zeros((0, N_stein))
   np_rnd.seed(0)
   for s in tqdm(scales):

@@ -8,6 +8,7 @@ if __name__=='__main__':
   import argparse
   parser = argparse.ArgumentParser()
   parser.add_argument('--model',type=str,default='f')
+  parser.add_argument('--baseline',action='store_true')
   args = parser.parse_args()
   
   model_path  = cnst.svm_lin_ovr_path     if 'a' == args.model else \
@@ -17,24 +18,19 @@ if __name__=='__main__':
                 cnst.all_svm_lin_ovo_path if 'e' == args.model else \
                 cnst.cat_svm_lin_ovo_path if 'f' == args.model else \
                 ''
-  fnames = dir_util.model_exam_paths06(model_path)
+  fnames = dir_util.model_exam_paths06(model_path, baseline=args.baseline)
   hyperparam_fnames = dir_util.hyperparam_all_paths04(model_path)
 
   cm = plt.get_cmap('gist_rainbow')
 
-  methods = [['PTM', 'CNA', 'AJA', 'VTM'],
-             ['PTM', 'CNA', 'AJA', 'VTM'],
-             ['PTM', 'CNA', 'AJA', 'VTM'],
-             ['PTM', 'CNA', 'CPA'],
-             ['PTM', 'CNA', 'CPA'],
-             ['PTM']]
-
-  method_to_color = {'PTM':'C0', 'CNA':'C1', 'AJA':'C2', 'VTM':'C3', 'CPA':'C4', 'ML':'Machine Learning'}
-  method_to_name = {'PTM':'Polyhedral Template Matching', 'CNA':'Common Neighbor Analysis', 'AJA':'Ackland-Jones Analysis', 'VTM':'VoroTop Analysis', 'CPA':'Chill+'}
-
   other_scores = pd.read_csv(fnames.other_scores,na_values='None',skipinitialspace=True)
   model_scores = pd.read_csv(hyperparam_fnames.model_score.scores.format('cat_byT_'))
-  df = pd.merge(other_scores, model_scores, on=['latt','temp'], how='outer')
+  df = pd.merge(other_scores, model_scores, on=['latt','temp'], how='inner')
+  if args.baseline:
+    baseline_fnames = dir_util.hyperparam_all_paths04(model_path, baseline=True)
+    baseline_scores = pd.read_csv(baseline_fnames.model_score.scores.format('cat_byT_'))
+    df = pd.merge(df, baseline_scores, on=['latt','temp'], how='inner')
+    
   df.to_csv(fnames.model_scores,na_rep='None')
   
   # normalize temperature

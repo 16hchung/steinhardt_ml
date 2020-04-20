@@ -13,11 +13,6 @@ class ModelTuner:
     self.model_params = model_params
     # properties keeping track of fnames/paths
     self.model_dir = model_dir
-    self.all_paths = dir_util.hyperparam_all_paths04(model_dir)
-    self.gs_paths = self.all_paths.grid_search
-    self.lc_paths = self.all_paths.learning_curve
-    self.ms_paths = self.all_paths.model_score
-    self.df_paths = self.all_paths.decision_fxn
     # this class method options
     self.should_relbl_wrong_neigh = False
     self.concat_test = False
@@ -29,10 +24,17 @@ class ModelTuner:
     parser = ArgumentParser()
     parser.add_argument('--stage', type=str, help='options: gs<1/2> (grid search), lc<1/2> (learning curve), ms<1/2> (model score)')
     parser.add_argument('--pretrained', action='store_true')
+    parser.add_argument('--baseline', action='store_true')
     args = parser.parse_args()
     stage = args.stage
-
+    self.baseline = args.baseline
     self.use_pretrained = args.pretrained
+
+    self.all_paths = dir_util.hyperparam_all_paths04(self.model_dir, baseline=self.baseline)
+    self.gs_paths = self.all_paths.grid_search
+    self.lc_paths = self.all_paths.learning_curve
+    self.ms_paths = self.all_paths.model_score
+    self.df_paths = self.all_paths.decision_fxn
 
     if stage == 'gs1':
       self.gs_compute()
