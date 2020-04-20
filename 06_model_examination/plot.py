@@ -17,6 +17,7 @@ if __name__=='__main__':
                 cnst.ocsvm_rbf_path       if 'd' == args.model else \
                 cnst.all_svm_lin_ovo_path if 'e' == args.model else \
                 cnst.cat_svm_lin_ovo_path if 'f' == args.model else \
+                cnst.cat_svm_rbf_ovo_path if 'g' == args.model else \
                 ''
   fnames = dir_util.model_exam_paths06(model_path, baseline=args.baseline)
   hyperparam_fnames = dir_util.hyperparam_all_paths04(model_path)

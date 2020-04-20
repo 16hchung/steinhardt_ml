@@ -23,6 +23,7 @@ svm_rbf_ovo_path = 'c_svm_rbf_ovo/'
 ocsvm_rbf_path = 'd_ocsvm_rbf/'
 all_svm_lin_ovo_path = 'e_all_svm_lin_ovo/'
 cat_svm_lin_ovo_path = 'f_cat_svm_lin_ovo/'
+cat_svm_rbf_ovo_path = 'g_cat_svm_rbf_ovo/'
 
 ######### CRYSTAL STRUCTURES ########
 
