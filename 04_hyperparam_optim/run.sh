@@ -4,10 +4,10 @@ sbatch <<EOT
 #SBATCH --no-requeue
 #SBATCH --qos=normal
 #SBATCH --partition=evanreed
-#SBATCH --output="logs/synth_job_out"$1".log"
-#SBATCH --error="logs/synth_job_err"$1".log"
+#SBATCH --output="logs/04_job_out.log"
+#SBATCH --error="logs/04_job_err.log"
 #SBATCH --mem=64G
-#SBATCH --job-name=stein_Ih
+#SBATCH --job-name="stein_Ih"
 #SBATCH --ntasks-per-node=20
 #SBATCH --time=7-00:00:00
 #SBATCH --nodes=1
@@ -24,5 +24,5 @@ ml load qt
 
 export MPLBACKEND="agg"
 export PYTHONPATH=
-srun ../ovito-3.0.0-dev608-x86_64/bin/ovitos -m 01_compute_features.01_compute --latt $1 --pseudo_param .35
+srun ../ovito-3.0.0-dev608-x86_64/bin/ovitos -m 04_hyperparam_optim.g_cat_svm_rbf_ovo.tuner --stage ms1
 EOT

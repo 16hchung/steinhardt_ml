@@ -4,10 +4,10 @@ sbatch <<EOT
 #SBATCH --no-requeue
 #SBATCH --qos=normal
 #SBATCH --partition=evanreed
-#SBATCH --output="real_job_out"$1".log"
-#SBATCH --error="real_job_err"$1".log"
+#SBATCH --output="logs/real_job_out"$1".log"
+#SBATCH --error="logs/real_job_err"$1".log"
 #SBATCH --mem=64G
-#SBATCH --job-name="real_stein_Ih"$1
+#SBATCH --job-name=real_stein_Ih
 #SBATCH --ntasks-per-node=20
 #SBATCH --time=7-00:00:00
 #SBATCH --nodes=1

@@ -39,7 +39,8 @@ lattices = [
   #Lattice(name='liq', sim_dir='03_liquid/',   cna_mod_type=0, n_neigh=None)#int(CNAModifier.Type.OTHER))
 ]
 
-possible_n_neigh = list(set([l.n_neigh for l in lattices]))
+#possible_n_neigh = list(set([l.n_neigh for l in lattices]))
+possible_n_neigh = list(range(1, 17))
 
 str_to_latt = {
   'fcc': lattices[0],
@@ -52,6 +53,6 @@ str_to_latt = {
 
 lbl_to_latt = {l.y_label : l for l in lattices}
 
-n_features = 15
+n_features = 10
 
 method_to_name = {'PTM':'Polyhedral Template Matching', 'CNA':'Common Neighbor Analysis', 'AJA':'Ackland-Jones Analysis', 'VTM':'VoroTop Analysis', 'CPA':'Chill+'}

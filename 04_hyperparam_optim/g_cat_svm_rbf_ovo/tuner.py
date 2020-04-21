@@ -10,7 +10,7 @@ from util import dir_util
 
 class ModelTunerG(ModelTuner):
   def __init__(self):
-    model_args = {'max_iter':10000, 'cache_size':1000, 'class_weight':'balanced'}
+    model_args = {'max_iter':100000, 'cache_size':1000, 'class_weight':'balanced'}
     #model_args = {'nu': .2}
     super().__init__(SVC, model_args, cnst.cat_svm_rbf_ovo_path)
     self.hyperprm_sffx = ''
