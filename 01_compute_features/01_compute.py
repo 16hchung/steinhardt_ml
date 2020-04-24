@@ -21,7 +21,7 @@ def compute_real_n_neigh(latt, l, N_stein, n_neigh):
       X = np.vstack((X, calc.compute_steinhardt(data, l, n_neigh)))
     np.savetxt(dir_util.all_features_path01(latt, temp=temp).format(n_neigh), X, fmt='%.10e')
     Xs.append(X)
-  X = np.vstack(Xs)
+  X = shuffle(np.vstack(Xs))
   np.savetxt(dir_util.all_features_path01(latt).format(n_neigh), X, fmt='%.10e')
 
 
@@ -43,6 +43,7 @@ def compute_synthetic_n_neigh(latt, l, N_stein, pseudo, n_neigh):
     #)
     X = np.vstack((X, calc.compute_steinhardt(data, l, n_neigh)))
   print(np_rnd.randn(1))
+  X = shuffle(X)
   np.savetxt(dir_util.all_features_path01(latt, True).format(n_neigh), X, fmt='%.10e')
 
 def compute_synthetic(latt, l, N_stein, pseudo=default_pseudo):

@@ -52,6 +52,10 @@ def run_all_concated(X, y, model, model_params, model_path, scores_path):
   params = {'tol':1e-3,'max_iter':1000}
   params.update(model_params)
   
+  X,y = shuffle(X,y)
+  n_train = 50000
+  X = X[:n_train]
+  y = y[:n_train]
   # Fit on train set.
   clf = model(**params)
   clf.fit(X,y)
