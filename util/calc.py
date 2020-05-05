@@ -10,16 +10,19 @@ from ovito.data import NearestNeighborFinder
 from . import constants as cnst, dir_util
 
 # Compute Steinhardt order parameter for all atoms in data.
-def compute_steinhardt(data,l,N_neigh):
+def compute_steinhardt(data,l,N_neigh,one_by_one=False):
   natoms = data.particles.count # Number of atoms.
   computed_steinhardt = zeros((natoms,len(l)))
   finder = NearestNeighborFinder(N_neigh,data) # Computes atom neighbor lists.
   # Loop over atoms to compute Steinhardt order paramter.
   for iatom in range(natoms):
     # Unroll neighbor distances.
-    r_ij = zeros((N_neigh, 3),dtype=float) # Distance to neighbors.
+    r_dim = 1 if one_by_one else N_neigh
+    r_ij = zeros((r_dim, 3),dtype=float) # Distance to neighbors.
     ineigh = 0 # Neighbor counter.
-    for neigh in finder.find(iatom):
+    for i_neigh, neigh in enumerate(finder.find(iatom)):
+      if one_by_one and i_neigh != N_neigh - 1:
+        continue
       r_ij[ineigh][:] = neigh.delta
       ineigh += 1
     # Compute steinhardt for this atom

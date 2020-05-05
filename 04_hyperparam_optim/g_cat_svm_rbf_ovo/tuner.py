@@ -25,10 +25,17 @@ class ModelTunerG(ModelTuner):
     y = np.loadtxt(paths.y.format('concat_'))
     return X,y
 
+  def gs_compute(self):
+    X,y = self.load_data()
+    gs.compute.grid_search_C_and_gamma(self.model, self.model_params, X, y, self.gs_paths)
+
+  def gs_plot(self):
+    gs.plot.plot_grid(self.gs_paths)
+
   def set_hyperparam(self):
-    pass
-    #self.model_params['C'] = 10
-    #self.hyperprm_sffx = '_C_1e-1'
+    self.model_params['C'] = 10
+    self.model_params['gamma'] = .03
+    self.hyperprm_sffx = '_C10_g.03'
 
 
 if __name__=='__main__':

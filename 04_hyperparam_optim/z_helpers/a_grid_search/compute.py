@@ -1,3 +1,4 @@
+from tqdm import tqdm
 import numpy as np
 from sklearn.model_selection import GridSearchCV
 from copy import copy
@@ -49,7 +50,7 @@ def grid_search_C(model, X, y, param_grid, val_curve_path, c_name='C', best_para
   data[4,:] = np.array(clf.cv_results_['std_train_score'])[:N]
   np.savetxt(val_curve_path, data.T, header=' '+c_name+' | training score | valid score', fmt='%.0e %.5f %.5f %.5f %.5f')
 
-dflt_model_args = {'max_iter':1000, 'tol':1e-3}
+dflt_model_args = {'max_iter':10000, 'tol':1e-3}
 
 def grid_search_C_only(model, model_args, X, y, gs_paths):
   C, param_grid = get_C_param_grid()
@@ -63,7 +64,7 @@ def grid_search_C_and_gamma(model, model_args, X, y, gs_paths, get_param_grid=No
     C, param_grid = get_param_grid()
   gamma = copy(param_vals)
   model_args.update(dflt_model_args)
-  for igamma, gamma_val in enumerate(gamma):
+  for igamma, gamma_val in tqdm(enumerate(gamma)):
     model_args['gamma'] = gamma_val
     gamma_suffix = '_{}'.format(igamma+1)
     val_fname = gs_paths.val_curve_data_tmplt.format(gamma_suffix)

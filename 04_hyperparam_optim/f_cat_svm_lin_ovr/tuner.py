@@ -25,8 +25,9 @@ class ModelTunerF(ModelTuner):
     y = np.loadtxt(paths.y.format('concat_'))
     return X,y
 
+
   def set_hyperparam(self):
-    self.model_params['C'] = 10
+    #self.model_params['C'] = 10
     pass
     #self.hyperprm_sffx = '_C_1e-1'
 

@@ -7,8 +7,9 @@ sbatch <<EOT
 #SBATCH --output="logs/"$1"_out.log"
 #SBATCH --error="logs/"$1"_err.log"
 #SBATCH --mem=128G
-#SBATCH --job-name=stein
-#SBATCH --ntasks-per-node=20
+#SBATCH --job-name="_"$1"_"
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
 #SBATCH --time=7-00:00:00
 #SBATCH --nodes=1
 

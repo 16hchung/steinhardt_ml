@@ -26,8 +26,9 @@ class ModelTunerH(ModelTuner):
     return X,y
 
   def set_hyperparam(self):
-    self.model_params['C'] = .03
-    self.hyperprm_sffx = '_C_3e-1'
+    pass
+    #self.model_params['C'] = .03
+    #self.hyperprm_sffx = '_C_3e-1'
 
 if __name__=='__main__':
   tuner = ModelTunerH()

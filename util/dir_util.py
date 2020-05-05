@@ -5,18 +5,22 @@ from pathlib import Path
 blank = '{}'
 pseudo_pre = 'pseudo_'
 
-def dump_path_for_lattice00(latt, perfect=False, temp=None):
+def dump_path_for_lattice00(latt, perfect=False, temp=None, liq=False):
   temp = temp if temp != None else latt.dflt_temp
-  perf_suffix = '_perfect' if perfect else '_{}K'.format(temp)
+  perf_suffix = '_perfect' if perfect else \
+                ''         if liq or temp == None else \
+                '_{}K'.format(temp)
   perf_prefix = 'perfect_' if perfect else ''
+  liq_suffix = 'liquid_'+latt.name if liq else latt.name
   ext = 'dat' if perfect else 'gz'
   dump_tmpl = '{}data/dump/dump_{}{}_{}.{}'#.dat'
-  return make_dirs(cnst.md_path + latt.sim_dir + dump_tmpl.format(perf_prefix, latt.name, perf_suffix, blank, ext))[0]
+  return make_dirs(cnst.md_path + latt.sim_dir + dump_tmpl.format(perf_prefix, liq_suffix, perf_suffix, blank, ext))[0]
 
-def all_features_path01(latt, pseudo=False, temp=None):
+def all_features_path01(latt, pseudo=False, temp=None, liq=False):
   temp = '' if temp == None else '_{}K'.format(temp)
   pseudo_prefix = pseudo_pre if pseudo else ''
-  return make_dirs('{}data/X/{}/X_{}{}_neigh{}.dat'.format(cnst.raw_feat_path, latt.name, pseudo_prefix, blank, temp))[0]
+  data_dir = 'X_liq' if liq else 'X'
+  return make_dirs('{}data/{}/{}/X_{}{}_neigh{}.dat'.format(cnst.raw_feat_path, data_dir, latt.name, pseudo_prefix, blank, temp))[0]
 
 def synth_carteasian_path01(latt):
   return make_dirs('{}data/synth_cart/{}.dat'.format(cnst.raw_feat_path, latt.name))[0]
@@ -53,7 +57,7 @@ def pca_data_paths03(pseudo=False):
   return Paths(*make_dirs(comp1, comp2, variance))
 
 def pca_fig_path03():
-  return '{}fig_PCA.png'.format(cnst.vis_figures_path)
+  return '{}fig_PCA{}.png'.format(cnst.vis_figures_path, blank)
 
 def tSNE_data_paths03(pseudo=False):
   pseudo_prefix = pseudo_pre if pseudo else ''

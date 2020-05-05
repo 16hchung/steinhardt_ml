@@ -1,12 +1,14 @@
 import matplotlib.pyplot as plt                 
 import numpy as np
 
+from .compute import param_vals
+
 def plot_validation(param_name, data_path, fig_path, add_custom_plot_elements=lambda:None):
   ################################################################################
   # Input parameters and setup.                                                  #
   ################################################################################
 
-  param, acc_train_avg, acc_train_std, acc_valid_avg, acc_valid_std = np.loadtxt(data_path, unpack=True)
+  param, acc_valid_avg, acc_valid_std, acc_train_avg, acc_train_std = np.loadtxt(data_path, unpack=True)
 
   ################################################################################
   # Plot.                                                                        #
@@ -28,7 +30,7 @@ def plot_validation(param_name, data_path, fig_path, add_custom_plot_elements=la
   ax.set_ylabel(r'Accuracy')
   ax.set_xscale('log')
   ax.set_xlim(param.min(),param.max())
-  ax.set_ylim(0.7,1)
+  ax.set_ylim(0,1)
   ax.legend(loc='lower right')
 
   # Save figure.
@@ -37,5 +39,8 @@ def plot_validation(param_name, data_path, fig_path, add_custom_plot_elements=la
 
   ################################################################################
 
-def plot_grid(param_names, data_paths, fig_path, add_custom_plot_elements=lambda:None):
-  pass
+def plot_grid(paths, add_custom_plot_elements=lambda:None):
+  for igamma, gamma in enumerate(param_vals):
+    data_path = paths.val_curve_data_tmplt.format('_'+str(igamma+1))
+    fig_path  = paths.val_curve_fig_tmplt.format('gamma'+str(gamma))
+    plot_validation('C', data_path, fig_path)

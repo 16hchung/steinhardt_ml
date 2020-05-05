@@ -24,5 +24,5 @@ ml load qt
 
 export MPLBACKEND="agg"
 export PYTHONPATH=
-srun ../ovito-3.0.0-dev608-x86_64/bin/ovitos -m 01_compute_features.01_compute --latt $1 --pseudo_param .35
+srun ../ovito-3.0.0-dev608-x86_64/bin/ovitos -m 01_compute_features.01_compute --latt $1 --pseudo_param .35 --one_by_one
 EOT

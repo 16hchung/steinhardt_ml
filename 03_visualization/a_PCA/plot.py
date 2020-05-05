@@ -27,7 +27,7 @@ def load_and_process_data(pseudo=True):
 # Plot.                                                                        #
 ################################################################################
 
-def plot(ps_PCA_1, ps_PCA_2, ps_y, PCA_1, PCA_2, y):
+def plot(PCA_1, PCA_2, y, fig_name):
   # Start figure.
   fig = plt.figure()
   ax  = fig.add_axes([0.15, 0.15, 0.80, 0.80])
@@ -36,7 +36,6 @@ def plot(ps_PCA_1, ps_PCA_2, ps_y, PCA_1, PCA_2, y):
   for latt in cnst.lattices:
     y_lbl = latt.y_label
     ax.plot(PCA_1[y==y_lbl],       PCA_2[y==y_lbl]      , latt.pt_fmt,    marker='.', alpha=.3, ls='', label=latt.name, mew=0)
-    ax.plot(ps_PCA_1[ps_y==y_lbl], ps_PCA_2[ps_y==y_lbl], latt.ps_pt_fmt, marker='.', alpha=.3, ls='', label='pseudo '+latt.name, mew=0)
    
   # Add details.
   ax.set_xlabel(r'First PCA component')
@@ -44,7 +43,7 @@ def plot(ps_PCA_1, ps_PCA_2, ps_y, PCA_1, PCA_2, y):
   ax.legend()
 
   # Save figure.
-  fig.savefig(dir_util.pca_fig_path03(), dpi=300)
+  fig.savefig(fig_name, dpi=300)
   plt.close()
 
 ################################################################################
@@ -52,7 +51,8 @@ def plot(ps_PCA_1, ps_PCA_2, ps_y, PCA_1, PCA_2, y):
 def main():
   ps_PCA_1, ps_PCA_2, ps_y = load_and_process_data(pseudo=True)
   PCA_1, PCA_2, y          = load_and_process_data(pseudo=False)
-  plot(ps_PCA_1, ps_PCA_2, ps_y, PCA_1, PCA_2, y)
+  plot(PCA_1,    PCA_2,    y,    dir_util.pca_fig_path03().format(''))
+  plot(ps_PCA_1, ps_PCA_2, ps_y, dir_util.pca_fig_path03().format('_synth'))
 
 if __name__=='__main__':
   main()

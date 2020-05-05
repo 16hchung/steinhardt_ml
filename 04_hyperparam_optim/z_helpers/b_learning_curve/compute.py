@@ -8,11 +8,11 @@ from util import dir_util
 ################################################################################
 
 def run(X,y, model, model_params, save_path):
-  params = {'tol':1e-3,'max_iter':1000}
+  params = {'tol':1e-3,'max_iter':10000}
   params.update(model_params)
 
   # Compute learning curve.
-  m, acc_train, acc_valid = learning_curve(model(**params), X, y, train_sizes=np.linspace(0.01,1.0,30), cv=5, n_jobs=-2)
+  m, acc_train, acc_valid = learning_curve(model(**params), X, y, train_sizes=np.linspace(0.01,1.0,20), cv=5, n_jobs=-1, verbose=5)
 
   # Compute mean and errors.
   acc_train_avg = np.mean(acc_train, axis=1)

@@ -2,8 +2,8 @@
 #SBATCH --no-requeue
 #SBATCH --qos=normal
 #SBATCH --partition=evanreed
-#SBATCH --output=job_tsne_out.log
-#SBATCH --error=job_tsne_err.log
+#SBATCH --output=logs/job_tsne_out.log
+#SBATCH --error=logs/job_tsne_err.log
 #SBATCH --mem=64G
 #SBATCH --job-name=tsne_many
 #SBATCH --ntasks-per-node=20

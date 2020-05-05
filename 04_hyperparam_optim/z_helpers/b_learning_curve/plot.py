@@ -27,7 +27,7 @@ def plot_learning(data_path, fig_path, add_custom_plot_elements=lambda:None):
   ax.set_xlabel(r'Training set size [$\times 10^3$]')
   ax.set_ylabel(r'Accuracy')
   ax.set_xlim(0,50)
-  ax.set_ylim(0.985,1)
+  ax.set_ylim(.85,1)
   ax.legend(loc='lower right')
   add_custom_plot_elements()
 

@@ -10,11 +10,7 @@ from util import dir_util
 # Plot tSNE.                                                                   #
 ################################################################################
 
-def plot_one_tSNE(X_tmplt, fig_tmplt, ps_y, y, perplexity):
-  # Load results.
-  tSNE = np.loadtxt(X_tmplt.format(perplexity))
-  tSNE, ps_tSNE = split_to_real_pseudo(tSNE)
-  
+def plot_one_tSNE(fig_name, tSNE, y):
   # Start figure.
   fig = plt.figure()
   ax  = fig.add_axes([0.025, 0.025, 0.925, 0.925])
@@ -23,7 +19,6 @@ def plot_one_tSNE(X_tmplt, fig_tmplt, ps_y, y, perplexity):
   for latt in cnst.lattices:
     y_lbl = latt.y_label
     ax.plot(tSNE[y==y_lbl][:,0],       tSNE[y==y_lbl][:,1],       latt.pt_fmt,    marker='o', alpha=.3, ls='', label=latt.name, mew=0)
-    ax.plot(ps_tSNE[ps_y==y_lbl][:,0], ps_tSNE[ps_y==y_lbl][:,1], latt.ps_pt_fmt, marker='o', alpha=.3, ls='', label='pseudo '+latt.name, mew=0)
    
   # Add details.
   ax.set_xticks([])
@@ -31,7 +26,7 @@ def plot_one_tSNE(X_tmplt, fig_tmplt, ps_y, y, perplexity):
   ax.legend()
   
   # Save figure.
-  fig.savefig(fig_tmplt.format(perplexity), dpi=300)
+  fig.savefig(fig_name, dpi=300)
   plt.close()
 
 def plot_many_tSNE(ps_y, y, data_paths, withPCA=False):
@@ -40,7 +35,10 @@ def plot_many_tSNE(ps_y, y, data_paths, withPCA=False):
   fig_tmplt = fig_tmplts.with_PCA if withPCA else fig_tmplts.no_PCA
   
   for perplexity in perplexity_list:
-    plot_one_tSNE(X_tmplt, fig_tmplt, ps_y, y, perplexity)
+    tSNE = np.loadtxt(X_tmplt.format(perplexity))
+    tSNE, ps_tSNE = split_to_real_pseudo(tSNE)
+    plot_one_tSNE(fig_tmplt.format(perplexity), tSNE, y)
+    plot_one_tSNE(fig_tmplt.format(str(perplexity)+'synth'), ps_tSNE, ps_y)
 
 ################################################################################
 # Plot tSNE after PCA filter.                                                  #
