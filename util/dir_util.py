@@ -25,13 +25,14 @@ def all_features_path01(latt, pseudo=False, temp=None, liq=False):
 def synth_carteasian_path01(latt):
   return make_dirs('{}data/synth_cart/{}.dat'.format(cnst.raw_feat_path, latt.name))[0]
 
-def clean_features_paths02(istest=False, pseudo=False, lattice=None, temp=None):
+def clean_features_paths02(istest=False, pseudo=False, lattice=None, temp=None, liq=False):
   pseudo_prefix = pseudo_pre if pseudo else ''
   split_lbl = 'test' if istest else 'train'
   lattice = '' if lattice == None else '{}/'.format(lattice.name)
   temp    = '' if temp    == None else '_{}K'.format(temp)
-  tmplt = '{par_dir}data/{lattice}{ps}{blank}{blank}_{split_lbl}_{blank}neigh{temp}.dat'.format(
-    ps=pseudo_prefix, par_dir=cnst.clean_feat_path, lattice=lattice, blank=blank, split_lbl=split_lbl, temp=temp
+  liq_str     = '' if not liq  else '_liq'
+  tmplt = '{par_dir}data/{lattice}{ps}{blank}{blank}_{split_lbl}_{blank}neigh{temp}{liq}.dat'.format(
+    ps=pseudo_prefix, par_dir=cnst.clean_feat_path, lattice=lattice, blank=blank, split_lbl=split_lbl, temp=temp, liq=liq_str
   )
 
   unscaledX = tmplt.format('X', '_unscaled', blank)
@@ -45,9 +46,10 @@ def scaler_path02(pseudo=False):
   pseudo_prefix = pseudo_pre if pseudo else ''
   return '{}data/{}scaler_{}neigh.pkl'.format(cnst.clean_feat_path, pseudo_prefix, blank)
 
-def pca_data_paths03(pseudo=False):
+def pca_data_paths03(pseudo=False, liq=False):
   pseudo_prefix = pseudo_pre if pseudo else ''
-  tmplt = '{}data/{}{}{}.dat'.format(cnst.pca_path, pseudo_prefix, blank, blank)
+  liq_str = '_liq' if liq else ''
+  tmplt = '{}data/{}{}{}{}.dat'.format(cnst.pca_path, pseudo_prefix, blank, blank, liq_str)
   comp_prefix = 'PCA_component_'
   comp1 = tmplt.format(comp_prefix, 1)
   comp2 = tmplt.format(comp_prefix, 2)

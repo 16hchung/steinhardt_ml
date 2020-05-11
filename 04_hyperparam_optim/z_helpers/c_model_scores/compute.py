@@ -49,15 +49,16 @@ def run_concated(X, y, model, model_params, model_path, scores_path):
   save_scores(clf, X_valid, y_valid, scores_path.format('all'))
 
 def run_all_concated(X, y, model, model_params, model_path, scores_path):
-  params = {'tol':1e-3,'max_iter':1000}
-  params.update(model_params)
+  #params = {'tol':1e-3,'max_iter':1000}
+  #params.update(model_params)
   
   X,y = shuffle(X,y)
   n_train = 50000
   X = X[:n_train]
   y = y[:n_train]
   # Fit on train set.
-  clf = model(**params)
+  #clf = model(**params)
+  clf = model(**model_params)
   clf.fit(X,y)
   joblib.dump(clf,model_path)
 
@@ -65,23 +66,29 @@ def run_all_concated(X, y, model, model_params, model_path, scores_path):
   paths = dir_util.clean_features_paths02(istest=True)
   X_valid = np.loadtxt(paths.X.format('concat_'))
   y_valid = np.loadtxt(paths.y.format('concat_'))
+  # include liquid points
+  paths = dir_util.clean_features_paths02(istest=True, liq=True)
+  X_liq = np.loadtxt(paths.X.format('concat_'))
+  y_liq = np.full(len(X_liq), -1)
+  X_valid = np.row_stack([X_valid, X_liq])
+  y_valid = np.concatenate([y_valid, y_liq])
   # limit number of test points for overall accuracy
   X_valid, y_valid = shuffle(X_valid, y_valid)
-  X_valid = X_valid[:n_test*len(cnst.lattices)]
-  y_valid = y_valid[:n_test*len(cnst.lattices)]
+  X_valid = X_valid[:n_test*2*len(cnst.lattices)]
+  y_valid = y_valid[:n_test*2*len(cnst.lattices)]
   save_scores(clf, X_valid, y_valid, scores_path.format('cat_'))
 
-  scores = {'latt': [], 'temp': [], 'ML': []}
-  for latt in cnst.lattices:
-    for temp in range(latt.low_temp, latt.high_temp+latt.step_temp, latt.step_temp):
-      paths = dir_util.clean_features_paths02(istest=True, lattice=latt, temp=temp)
-      X_valid = shuffle(np.loadtxt(paths.X.format('concat_')))[:n_test]
-      y_valid = np.ones(X_valid.shape[0]) * latt.y_label
-      scores['latt'].append(latt.name)
-      scores['temp'].append(temp)
-      scores['ML'].append(clf.score(X_valid, y_valid))
-  df = pd.DataFrame(data=scores)
-  df.to_csv(scores_path.format('cat_byT_'), index=False)
+  #scores = {'latt': [], 'temp': [], 'ML': []}
+  #for latt in cnst.lattices:
+  #  for temp in range(latt.low_temp, latt.high_temp+latt.step_temp, latt.step_temp):
+  #    paths = dir_util.clean_features_paths02(istest=True, lattice=latt, temp=temp)
+  #    X_valid = shuffle(np.loadtxt(paths.X.format('concat_')))[:n_test]
+  #    y_valid = np.ones(X_valid.shape[0]) * latt.y_label
+  #    scores['latt'].append(latt.name)
+  #    scores['temp'].append(temp)
+  #    scores['ML'].append(clf.score(X_valid, y_valid))
+  #df = pd.DataFrame(data=scores)
+  #df.to_csv(scores_path.format('cat_byT_'), index=False)
 
 
 ################################################################################

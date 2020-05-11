@@ -14,12 +14,12 @@ n_train_pts = 50000
 N_keep = int(n_train_pts / len(cnst.lattices))
 
 # Load features and balance classes.
-def load_and_balance(pseudo, n_neigh=None):
+def load_and_balance(pseudo, n_neigh=None, liq=False):
   Xs = {}
   for latt in cnst.lattices:
     # default is to use pseudo data
     neigh = latt.n_neigh if n_neigh == None else n_neigh
-    Xs[latt] = np.loadtxt(dir_util.all_features_path01(latt, pseudo=pseudo).format(neigh))
+    Xs[latt] = np.loadtxt(dir_util.all_features_path01(latt, pseudo=pseudo, liq=liq).format(neigh))
   np_rnd.seed(0)
   #N_min = min([x.shape[0] for x in Xs.values()])
   Xs = {l:shuffle(x)[:N_keep] for l,x in Xs.items()}
@@ -46,9 +46,9 @@ def scale_data(X, n_neigh, fnames, scaler=None):
   X = scaler.transform(X)
   return scaler, X
 
-def process_n_neigh(fnames, pseudo, n_neigh=None, latt=None, temp=None): # if default: generate pseudo/adaptive training 
+def process_n_neigh(fnames, pseudo, n_neigh=None, latt=None, temp=None, liq=False): # if default: generate pseudo/adaptive training 
   if latt==None or temp==None or pseudo:
-    Xs = load_and_balance(pseudo, n_neigh)
+    Xs = load_and_balance(pseudo, n_neigh, liq=liq)
     ys = make_labels(Xs)
     X, y = combine_lattices_data(Xs, ys)
   else:
@@ -83,11 +83,11 @@ def shuffle_all_and_save(Xs, ys, fnames, n_neighs, scaler=None, concat=False, sa
       save_single(X, unscaledX, y, n_neigh)
   return Xs, ys
 
-def process_set(fnames, pseudo=False, scaler=None, scaler_path=None, concat=False, latt=None, temp=None):
+def process_set(fnames, pseudo=False, scaler=None, scaler_path=None, concat=False, latt=None, temp=None, liq=False):
   Xs = []
   ys = []
   for neigh in cnst.possible_n_neigh:
-    X, y = process_n_neigh(fnames, pseudo, neigh, latt, temp)
+    X, y = process_n_neigh(fnames, pseudo, neigh, latt, temp, liq=liq)
 
     incorrect_labels = [lbl for lbl, latt in cnst.lbl_to_latt.items() if latt.n_neigh != neigh]
     y[np.isin(y, incorrect_labels)] *= -1
@@ -104,6 +104,7 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--cat', action='store_true')
   parser.add_argument('--part', default='p1')
+  parser.add_argument('--liq', action='store_true')
   args = parser.parse_args()
 
   if args.part == 'p1':
@@ -117,13 +118,18 @@ def main():
     print('processing real test data')
     fnames = dir_util.clean_features_paths02(istest=True)
     process_set(fnames, pseudo=False, scaler=scaler, concat=args.cat)
-  else:
+  if args.part == 'p2':
     print('processing by latt and temp')
     scaler = joblib.load(dir_util.scaler_path02(pseudo=True).format('all_'))
     for latt in tqdm(cnst.lattices):
       for temp in range(latt.low_temp, latt.high_temp+latt.step_temp, latt.step_temp):
         fnames = dir_util.clean_features_paths02(istest=True, lattice=latt, temp=temp)
         process_set(fnames, pseudo=False, scaler=scaler, concat=args.cat, latt=latt, temp=temp)
+  if args.part == 'liq':
+    print('processing liq test data')
+    scaler = joblib.load(dir_util.scaler_path02(pseudo=True).format('all_'))
+    fnames = dir_util.clean_features_paths02(istest=True, liq=True)
+    process_set(fnames, pseudo=False, scaler=scaler, concat=args.cat, liq=True)
     
 if __name__=='__main__':
   main()

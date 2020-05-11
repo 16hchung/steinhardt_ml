@@ -25,6 +25,7 @@ all_svm_lin_ovo_path = 'e_all_svm_lin_ovo/'
 cat_svm_lin_ovr_path = 'f_cat_svm_lin_ovr/'
 cat_svm_rbf_ovo_path = 'g_cat_svm_rbf_ovo/'
 cat_svm_lin_ovo_path = 'h_cat_svm_lin_ovo/' 
+cat_with_liq_path    = 'i_cat_with_liq/'
 
 ######### CRYSTAL STRUCTURES ########
 

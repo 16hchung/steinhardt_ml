@@ -8,14 +8,14 @@ from util import constants as cnst
 # Load and process data.                                                       #
 ################################################################################
 
-def load_and_process_data(pseudo=True):
+def load_and_process_data(pseudo=True, liq=False):
   M = 20000 # Number of points to be plotted.
 
   # Load results.
-  data_names = dir_util.pca_data_paths03(pseudo=pseudo)
+  data_names = dir_util.pca_data_paths03(pseudo=pseudo, liq=liq)
   PCA_1 = np.loadtxt(data_names.comp1)
   PCA_2 = np.loadtxt(data_names.comp2)
-  y = np.loadtxt(dir_util.clean_features_paths02(istest=not pseudo, pseudo=pseudo).y.format('concat_'))
+  y = np.loadtxt(dir_util.clean_features_paths02(istest=not pseudo, pseudo=pseudo, liq=liq).y.format('concat_'))
 
   # Limit number of points plotted.
   PCA_1 = PCA_1[:M]
@@ -51,8 +51,10 @@ def plot(PCA_1, PCA_2, y, fig_name):
 def main():
   ps_PCA_1, ps_PCA_2, ps_y = load_and_process_data(pseudo=True)
   PCA_1, PCA_2, y          = load_and_process_data(pseudo=False)
+  liqPCA_1, liqPCA_2, liqy = load_and_process_data(pseudo=False, liq=True)
   plot(PCA_1,    PCA_2,    y,    dir_util.pca_fig_path03().format(''))
   plot(ps_PCA_1, ps_PCA_2, ps_y, dir_util.pca_fig_path03().format('_synth'))
+  plot(liqPCA_1, liqPCA_2, liqy, dir_util.pca_fig_path03().format('_liq'))
 
 if __name__=='__main__':
   main()

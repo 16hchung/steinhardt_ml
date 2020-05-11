@@ -7,20 +7,26 @@ def main():
   # Load data from example files.
   ps_test_names = dir_util.clean_features_paths02(pseudo=True)
   test_names    = dir_util.clean_features_paths02(istest=True)
+  liq_names     = dir_util.clean_features_paths02(istest=True, liq=True)
   ps_X = np.loadtxt(ps_test_names.X.format('concat_'))
   X    = np.loadtxt(test_names.X.format('concat_'))
+  liqX = np.loadtxt(liq_names.X.format('concat_'))
 
   # Compute PCA from  and save first two components.
   pca = PCA()
   # fit princip components from pseudo steinhardts, transform both pseudo and real to see overlay
   ps_X_pca = pca.fit(ps_X).transform(ps_X)
   X_pca = pca.transform(X)
+  liqX_pca = pca.transform(liqX)
   ps_paths = dir_util.pca_data_paths03(pseudo=True)
   paths = dir_util.pca_data_paths03()
+  liq_paths = dir_util.pca_data_paths03(liq=True)
   np.savetxt(paths.comp1, X_pca[:,0])
   np.savetxt(paths.comp2, X_pca[:,1])
   np.savetxt(ps_paths.comp1, ps_X_pca[:,0])
   np.savetxt(ps_paths.comp2, ps_X_pca[:,1])
+  np.savetxt(liq_paths.comp1, liqX_pca[:,0])
+  np.savetxt(liq_paths.comp2, liqX_pca[:,1])
 
   # Compute cummulative variance explained .
   var = pca.explained_variance_ratio_.cumsum()
