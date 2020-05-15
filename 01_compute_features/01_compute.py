@@ -39,6 +39,13 @@ def compute_real(latt, l, N_stein, liq=False):
   for n_neigh in cnst.possible_n_neigh:
     compute_real_n_neigh(latt, l, N_stein, n_neigh, liq)
 
+def compute_perfect(latt, l, N_stein):
+  for n_neigh in tqdm(cnst.possible_n_neigh):
+    pipeline = import_file(dir_util.dump_path_for_lattice00(latt, True).format(0))
+    data = pipeline.compute()
+    X = calc.compute_steinhardt(data, l, n_neigh)
+    np.savetxt(dir_util.all_features_path01(latt, pseudo=True, perfect=True).format(n_neigh), X, fmt='%.10e')
+
 def compute_synthetic_n_neigh(latt, l, N_stein, pseudo, n_neigh):
   scales = np.linspace(.01, pseudo, num=15)
   X = np.zeros((0, N_stein))
@@ -69,6 +76,7 @@ def main():
   parser.add_argument('--comp_both', action='store_true')
   parser.add_argument('--one_by_one', action='store_true')
   parser.add_argument('--liq', action='store_true')
+  parser.add_argument('--perfect', action='store_true')
   args = parser.parse_args()
  
   # constants
@@ -82,6 +90,10 @@ def main():
   lattices = cnst.lattices if args.latt == None else [cnst.str_to_latt[args.latt]]
   for latt in lattices:
     print(latt.name)
+    if args.perfect:
+      print('computing perfect')
+      compute_perfect(latt, l, N_stein)
+      continue
     if args.liq:
       print('computing real liquid')
       compute_real(latt, l, N_stein, liq=True)

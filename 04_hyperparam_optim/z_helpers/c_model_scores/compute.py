@@ -49,16 +49,16 @@ def run_concated(X, y, model, model_params, model_path, scores_path):
   save_scores(clf, X_valid, y_valid, scores_path.format('all'))
 
 def run_all_concated(X, y, model, model_params, model_path, scores_path):
-  #params = {'tol':1e-3,'max_iter':1000}
-  #params.update(model_params)
+  params = {'tol':1e-3,'max_iter':1000, 'verbose':True}
+  params.update(model_params)
   
   X,y = shuffle(X,y)
   n_train = 50000
   X = X[:n_train]
   y = y[:n_train]
   # Fit on train set.
-  #clf = model(**params)
-  clf = model(**model_params)
+  clf = model(**params)
+  #clf = model(**model_params)
   clf.fit(X,y)
   joblib.dump(clf,model_path)
 
@@ -72,10 +72,11 @@ def run_all_concated(X, y, model, model_params, model_path, scores_path):
   y_liq = np.full(len(X_liq), -1)
   X_valid = np.row_stack([X_valid, X_liq])
   y_valid = np.concatenate([y_valid, y_liq])
+
   # limit number of test points for overall accuracy
   X_valid, y_valid = shuffle(X_valid, y_valid)
-  X_valid = X_valid[:n_test*2*len(cnst.lattices)]
-  y_valid = y_valid[:n_test*2*len(cnst.lattices)]
+  X_valid = X_valid[:n_test*len(cnst.lattices)]
+  y_valid = y_valid[:n_test*len(cnst.lattices)]
   save_scores(clf, X_valid, y_valid, scores_path.format('cat_'))
 
   #scores = {'latt': [], 'temp': [], 'ML': []}

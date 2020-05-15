@@ -5,6 +5,10 @@ from pathlib import Path
 blank = '{}'
 pseudo_pre = 'pseudo_'
 
+def perf_features_path(latt, scaled=False):
+  scaled_suff = '_scaled' if scaled else ''
+  return 'util/data/{}_perf{}.dat'.format(latt.name, scaled_suff)
+
 def dump_path_for_lattice00(latt, perfect=False, temp=None, liq=False):
   temp = temp if temp != None else latt.dflt_temp
   perf_suffix = '_perfect' if perfect else \
@@ -16,10 +20,11 @@ def dump_path_for_lattice00(latt, perfect=False, temp=None, liq=False):
   dump_tmpl = '{}data/dump/dump_{}{}_{}.{}'#.dat'
   return make_dirs(cnst.md_path + latt.sim_dir + dump_tmpl.format(perf_prefix, liq_suffix, perf_suffix, blank, ext))[0]
 
-def all_features_path01(latt, pseudo=False, temp=None, liq=False):
+def all_features_path01(latt, pseudo=False, temp=None, liq=False, perfect=False):
   temp = '' if temp == None else '_{}K'.format(temp)
   pseudo_prefix = pseudo_pre if pseudo else ''
-  data_dir = 'X_liq' if liq else 'X'
+  data_dir = 'X_liq' if liq else \
+             'X_perf' if perfect else 'X'
   return make_dirs('{}data/{}/{}/X_{}{}_neigh{}.dat'.format(cnst.raw_feat_path, data_dir, latt.name, pseudo_prefix, blank, temp))[0]
 
 def synth_carteasian_path01(latt):
@@ -92,6 +97,9 @@ def zscore_fig_path03(latt):
   meds = tmplt.format('meds')
   Paths = namedtuple('Paths', 'mins maxs avgs meds')
   return Paths(*make_dirs(mins, maxs, avgs, meds))
+
+def perf_dist_fig_path03(latt, dir_suffix):
+  return make_dirs('{}perf_dist{}/{}.png'.format(cnst.vis_figures_path, dir_suffix, latt.name))[0]
 
 def grid_search_paths04(model_dir, tmplt):
   data_path = 'grid_search_data/'

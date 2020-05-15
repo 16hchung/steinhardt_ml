@@ -99,12 +99,21 @@ def process_set(fnames, pseudo=False, scaler=None, scaler_path=None, concat=Fals
   Xs,ys = shuffle_all_and_save(Xs, ys, fnames, cnst.possible_n_neigh, scaler, concat, save_y=temp==None)
   return Xs, ys, scaler
 
+def process_perf(scaler, latt):
+  unscaled_fname = dir_util.perf_features_path(latt, scaled=False)
+  scaled_fname   = dir_util.perf_features_path(latt, scaled=True)
+  X = np.loadtxt(unscaled_fname).reshape(1, -1)
+  for i in range(16):
+    start = i*cnst.n_features
+    end = (i+1)*cnst.n_features
+    X[0][start:end] = scaler.transform(X[0][start:end].reshape(1,-1))
+  np.savetxt(scaled_fname, X, fmt='%.10e')
+
 def main():
   import argparse
   parser = argparse.ArgumentParser()
   parser.add_argument('--cat', action='store_true')
   parser.add_argument('--part', default='p1')
-  parser.add_argument('--liq', action='store_true')
   args = parser.parse_args()
 
   if args.part == 'p1':
@@ -130,6 +139,11 @@ def main():
     scaler = joblib.load(dir_util.scaler_path02(pseudo=True).format('all_'))
     fnames = dir_util.clean_features_paths02(istest=True, liq=True)
     process_set(fnames, pseudo=False, scaler=scaler, concat=args.cat, liq=True)
+  if args.part == 'perf':
+    print('scaling perfect features')
+    scaler = joblib.load(dir_util.scaler_path02(pseudo=True).format('all_'))
+    for latt in tqdm(cnst.lattices):
+      process_perf(scaler, latt)
     
 if __name__=='__main__':
   main()

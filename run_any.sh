@@ -6,10 +6,10 @@ sbatch <<EOT
 #SBATCH --partition=evanreed
 #SBATCH --output="logs/"$1"_out.log"
 #SBATCH --error="logs/"$1"_err.log"
-#SBATCH --mem=128G
+#SBATCH --mem=160G
 #SBATCH --job-name="_"$1"_"
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=$2
 #SBATCH --time=7-00:00:00
 #SBATCH --nodes=1
 
@@ -25,5 +25,5 @@ ml load qt
 
 export MPLBACKEND="agg"
 export PYTHONPATH=
-srun ../ovito-3.0.0-dev608-x86_64/bin/ovitos -m $2
+srun ../ovito-3.0.0-dev608-x86_64/bin/ovitos -m $3
 EOT
