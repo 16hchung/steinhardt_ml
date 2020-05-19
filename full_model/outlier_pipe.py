@@ -58,6 +58,8 @@ class ClassifierWithPerfDist:
       latt_dist = np.linalg.norm(lattX - perfx, axis=-1) \
                   * cosine_distances(lattX, np.expand_dims(perfx, axis=0))
       self.latt_to_cut[latt.name] = np.percentile(latt_dist, self.percentile)
+
+    print('done training')
     return self
 
   def get_params(self, *kargs, **kwargs):
@@ -71,12 +73,15 @@ class ClassifierWithPerfDist:
 
   def predict(self, X):
     y = self.classifier.predict(X)
-    for latt in cnst.lattices:
+    for latt in tqdm(cnst.lattices):
       perf = perf_features[latt.name]
+      y_latt = y[y==latt.y_label]
+      X_latt = X[y==latt.y_label][:]
       cutoff = self.latt_to_cut[latt.name] * self.cutoff_scaler
-      dist = np.linalg.norm(X - perf, axis=-1) \
-             * cosine_distances(X, np.expand_dims(perf, axis=0))
-      y[(y==latt.y_label) & (dist > cutoff)] = -1
+      dist = np.linalg.norm(X_latt - perf, axis=-1) \
+          * cosine_distances(X_latt, np.expand_dims(perf, axis=0))[:,0]
+      y_latt[dist > cutoff] = -1
+      y[y==latt.y_label] = y_latt
     return y
 
   def score(self, X, y):

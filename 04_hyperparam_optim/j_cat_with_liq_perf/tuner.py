@@ -28,8 +28,8 @@ class ModelTunerJ(ModelTuner):
     self.model_params['C'] = 10
     self.model_params['gamma'] = .03
     self.model_params['cutoff_scaler'] = 1
-    self.model_params['percentile'] = 90
-    self.hyperprm_sffx = '_C3_g.03_cut1_integ90_euccos'
+    self.model_params['percentile'] = 95
+    self.hyperprm_sffx = '_C10_g.03_cut1_integ95_euccos'
 
 if __name__=='__main__':
   tuner = ModelTunerJ()
