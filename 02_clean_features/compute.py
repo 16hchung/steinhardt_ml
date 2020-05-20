@@ -72,8 +72,10 @@ def shuffle_all_and_save(Xs, ys, fnames, n_neighs, scaler=None, concat=False, sa
     unscaledX = np.concatenate(Xs, axis=1)
     X = unscaledX
     if scaler != None:
-      scaledXs = [scaler.transform(x) for x in Xs]
-      X = np.concatenate(scaledXs, axis=1)
+      #scaledXs = [scaler.transform(x) for x in Xs]
+      #X = np.concatenate(scaledXs, axis=1)
+      X = np.concatenate(Xs, axis=1)
+      X = scaler.transform(X)
     save_single(X, unscaledX, y, 'concat_')
   else:
     for i, unscaledX in enumerate(Xs):
@@ -95,7 +97,7 @@ def process_set(fnames, pseudo=False, scaler=None, scaler_path=None, concat=Fals
     Xs.append(X)
     ys.append(y)
   if scaler == None and scaler_path != None:
-    scaler, _ = scale_data(np.row_stack(Xs), 'all_', fnames)
+    scaler, _ = scale_data(np.concatenate(Xs, axis=1), 'all_', fnames)
   Xs,ys = shuffle_all_and_save(Xs, ys, fnames, cnst.possible_n_neigh, scaler, concat, save_y=temp==None)
   return Xs, ys, scaler
 
@@ -103,10 +105,11 @@ def process_perf(scaler, latt):
   unscaled_fname = dir_util.perf_features_path(latt, scaled=False)
   scaled_fname   = dir_util.perf_features_path(latt, scaled=True)
   X = np.loadtxt(unscaled_fname).reshape(1, -1)
-  for i in range(16):
-    start = i*cnst.n_features
-    end = (i+1)*cnst.n_features
-    X[0][start:end] = scaler.transform(X[0][start:end].reshape(1,-1))
+  #for i in range(16):
+  #  start = i*cnst.n_features
+  #  end = (i+1)*cnst.n_features
+  #  X[0][start:end] = scaler.transform(X[0][start:end].reshape(1,-1))
+  X = scaler.transform(X)
   np.savetxt(scaled_fname, X, fmt='%.10e')
 
 def main():
