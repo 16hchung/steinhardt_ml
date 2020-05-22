@@ -26,10 +26,10 @@ class ModelTunerJ(ModelTuner):
 
   def set_hyperparam(self):
     self.model_params['C'] = 10
-    self.model_params['gamma'] = .03
+    self.model_params['gamma'] = .01
     self.model_params['cutoff_scaler'] = 1
     self.model_params['percentile'] = 95
-    self.hyperprm_sffx = '_C10_g.03_cut1_integ95_euccos'
+    self.hyperprm_sffx = '_correct_scaler_C10_g.01_integ95_euccos'
 
 if __name__=='__main__':
   tuner = ModelTunerJ()

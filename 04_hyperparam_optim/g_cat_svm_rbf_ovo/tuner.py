@@ -33,9 +33,9 @@ class ModelTunerG(ModelTuner):
     gs.plot.plot_grid(self.gs_paths)
 
   def set_hyperparam(self):
-    self.model_params['C'] = 3
-    self.model_params['gamma'] = .03
-    self.hyperprm_sffx = '_C3_g.03'
+    self.model_params['C'] = 10
+    self.model_params['gamma'] = .01
+    self.hyperprm_sffx = '_C10_g.01'
 
 
 if __name__=='__main__':
