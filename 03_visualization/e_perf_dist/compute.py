@@ -36,6 +36,23 @@ def main(euc=True, cos=False, synth=False):
       liq_dist  = liq_dist  * cosine_distances(X_liq, np.expand_dims(perfx, axis=0))
 
     plt.hist([latt_dist, liq_dist], bins=100, density=True, label=[latt.name,'liquid'])
+
+    # plot potential cutoffs
+    p99 = np.percentile(latt_dist, 99)
+    p95 = np.percentile(latt_dist, 95)
+    p90 = np.percentile(latt_dist, 90)
+    std, mean = np.std(latt_dist), np.mean(latt_dist)
+    std2     = mean + 2*std
+    std2half = mean + 2.5*std
+    std3     = mean + 3*std
+    lines = [p90, p95, p99, std2, std2half, std3]
+    colors = ['r', 'r', 'r', 'b', 'b', 'b']
+    styles = ['solid', 'dashed', 'dotted', 'solid', 'dashed', 'dotted']
+    lbls  = ['90th %ile', '95th %ile', '99th %ile', r'2$\sigma$', r'2.5$\sigma$', r'3$\sigma$']
+    for x, lbl, color, style in zip(lines, lbls, colors, styles):
+      plt.vlines(x, 0, 1, colors=color, linestyles=style, label=lbl)
+    #plt.vlines(lines, 0, 1, label=lbls)
+
     plt.legend()
     fig_path = dir_util.perf_dist_fig_path03(latt, dir_suffix)
     plt.savefig(fig_path, dpi=300)

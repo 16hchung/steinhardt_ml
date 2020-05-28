@@ -20,12 +20,15 @@ def dump_path_for_lattice00(latt, perfect=False, temp=None, liq=False):
   dump_tmpl = '{}data/dump/dump_{}{}_{}.{}'#.dat'
   return make_dirs(cnst.md_path + latt.sim_dir + dump_tmpl.format(perf_prefix, liq_suffix, perf_suffix, blank, ext))[0]
 
-def all_features_path01(latt, pseudo=False, temp=None, liq=False, perfect=False):
+def all_features_path01(latt, pseudo=False, temp=None, liq=False, perfect=False, rsf=False):
   temp = '' if temp == None else '_{}K'.format(temp)
+  rsf_prefix = '' if not rsf else '_rsf'
   pseudo_prefix = pseudo_pre if pseudo else ''
   data_dir = 'X_liq' if liq else \
              'X_perf' if perfect else 'X'
-  return make_dirs('{}data/{}/{}/X_{}{}_neigh{}.dat'.format(cnst.raw_feat_path, data_dir, latt.name, pseudo_prefix, blank, temp))[0]
+  return make_dirs(
+      '{}data/{}/{}/X_{}{}_neigh{}{}.dat'.format(cnst.raw_feat_path, data_dir, latt.name, pseudo_prefix, blank, temp, rsf_prefix)
+  )[0]
 
 def synth_carteasian_path01(latt):
   return make_dirs('{}data/synth_cart/{}.dat'.format(cnst.raw_feat_path, latt.name))[0]

@@ -42,7 +42,7 @@ lattices = [
   #Lattice(name='liq', sim_dir='03_liquid/',   cna_mod_type=0, n_neigh=None)#int(CNAModifier.Type.OTHER))
 ]
 
-#possible_n_neigh = list(set([l.n_neigh for l in lattices]))
+select_possible_n_neigh = list(np.sort(list(set([l.n_neigh for l in lattices]))))
 possible_n_neigh = list(range(1, 17))
 
 str_to_latt = {

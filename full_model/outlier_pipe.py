@@ -39,12 +39,12 @@ class ClassifierWithLiq:
     return np.mean(y_same)
 
 class ClassifierWithPerfDist:
-  def __init__(self, classifier=SVC, cutoff_scaler=1., percentile=None, **kwargs): 
+  def __init__(self, classifier=SVC, percentile=95, n_stdevs=None, **kwargs): 
     dflg_classif = {}
     dflg_classif.update(kwargs)
-    self.cutoff_scaler = cutoff_scaler
     self.classifier = classifier(**dflg_classif)
     self.percentile = percentile 
+    self.n_stdevs   = n_stdevs
     self.latt_to_cut = { latt.name : latt.outlier_cut for latt in cnst.lattices }
 
   def fit(self, X, y):
@@ -57,18 +57,27 @@ class ClassifierWithPerfDist:
       lattX = X[y==latt.y_label][:]
       latt_dist = np.linalg.norm(lattX - perfx, axis=-1) \
                   * cosine_distances(lattX, np.expand_dims(perfx, axis=0))
-      self.latt_to_cut[latt.name] = np.percentile(latt_dist, self.percentile)
+      if self.percentile != None:
+        self.latt_to_cut[latt.name] = np.percentile(latt_dist, self.percentile)
+      elif self.n_stdevs != None:
+        mean = np.mean(latt_dist)
+        std = np.std(latt_dist)
+        self.latt_to_cut[latt.name] = mean + self.n_stdevs * std
+      else:
+        raise ValueError('either self.percentile or n_stdevs must have numeric value')
 
     print('done training')
     return self
 
   def get_params(self, *kargs, **kwargs):
     params = self.classifier.get_params(*kargs, **kwargs)
-    params['cutoff_scaler'] = self.cutoff_scaler
+    params['percentile'] = self.percentile
+    params['n_stdevs']   = self.n_stdevs
     return params
 
-  def set_params(self, *kargs, cutoff_scaler=1., **kwargs):
-    params['cutoff_scaler'] = cutoff_scaler
+  def set_params(self, *kargs, percentile=95, n_stdevs=None, **kwargs):
+    params['percentile'] = percentile
+    params['n_stdevs']   = n_stdevs
     return self.classifier.set_params(*kargs, **kwargs)
 
   def predict(self, X):
@@ -77,7 +86,7 @@ class ClassifierWithPerfDist:
       perf = perf_features[latt.name]
       y_latt = y[y==latt.y_label]
       X_latt = X[y==latt.y_label][:]
-      cutoff = self.latt_to_cut[latt.name] * self.cutoff_scaler
+      cutoff = self.latt_to_cut[latt.name]
       dist = np.linalg.norm(X_latt - perf, axis=-1) \
           * cosine_distances(X_latt, np.expand_dims(perf, axis=0))[:,0]
       y_latt[dist > cutoff] = -1
