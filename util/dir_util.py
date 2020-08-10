@@ -20,9 +20,9 @@ def dump_path_for_lattice00(latt, perfect=False, temp=None, liq=False):
   dump_tmpl = '{}data/dump/dump_{}{}_{}.{}'#.dat'
   return make_dirs(cnst.md_path + latt.sim_dir + dump_tmpl.format(perf_prefix, liq_suffix, perf_suffix, blank, ext))[0]
 
-def all_features_path01(latt, pseudo=False, temp=None, liq=False, perfect=False, rsf=False):
+def all_features_path01(latt, pseudo=False, temp=None, liq=False, perfect=False, rsf=None):
   temp = '' if temp == None else '_{}K'.format(temp)
-  rsf_prefix = '' if not rsf else '_rsf'
+  rsf_prefix = '' if rsf ==None else f'_rsf{rsf}'
   pseudo_prefix = pseudo_pre if pseudo else ''
   data_dir = 'X_liq' if liq else \
              'X_perf' if perfect else 'X'
@@ -57,14 +57,15 @@ def scaler_path02(pseudo=False):
 def pca_data_paths03(pseudo=False, liq=False):
   pseudo_prefix = pseudo_pre if pseudo else ''
   liq_str = '_liq' if liq else ''
-  tmplt = '{}data/{}{}{}{}.dat'.format(cnst.pca_path, pseudo_prefix, blank, blank, liq_str)
+  tmplt = '{}data/{}{}{}{}.{}'.format(cnst.pca_path, pseudo_prefix, blank, blank, liq_str, blank)
   comp_prefix = 'PCA_component_'
-  comp1 = tmplt.format(comp_prefix, 1)
-  comp2 = tmplt.format(comp_prefix, 2)
-  variance = tmplt.format('variance', '')
+  comp1 = tmplt.format(comp_prefix, 1, 'dat')
+  comp2 = tmplt.format(comp_prefix, 2, 'dat')
+  variance = tmplt.format('variance', '', 'dat')
+  pca = tmplt.format('pca', '', 'pkl')
   
-  Paths = namedtuple('Paths', 'comp1 comp2 variance')
-  return Paths(*make_dirs(comp1, comp2, variance))
+  Paths = namedtuple('Paths', 'comp1 comp2 variance pca')
+  return Paths(*make_dirs(comp1, comp2, variance, pca))
 
 def pca_fig_path03():
   return '{}fig_PCA{}.png'.format(cnst.vis_figures_path, blank)

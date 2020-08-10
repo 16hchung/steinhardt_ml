@@ -1,16 +1,30 @@
 import numpy as np
 from sklearn.decomposition import PCA
+import pickle as pk
 
-from util import dir_util
+from util import dir_util, constants as C
 
 def main():
   # Load data from example files.
   ps_test_names = dir_util.clean_features_paths02(pseudo=True)
   test_names    = dir_util.clean_features_paths02(istest=True)
   liq_names     = dir_util.clean_features_paths02(istest=True, liq=True)
-  ps_X = np.loadtxt(ps_test_names.X.format('concat_'))
-  X    = np.loadtxt(test_names.X.format('concat_'))
-  liqX = np.loadtxt(liq_names.X.format('concat_'))
+  ps_X = np.loadtxt(ps_test_names.X.format('concat_'))[:,:]
+  #ps_X = np.loadtxt(ps_test_names.unscaledX.format('concat_'))[:,:-28]
+  #test_names = dir_util.clean_features_paths02(istest=True, lattice=C.lattices[0], temp=200)
+  #X1    = np.loadtxt(test_names.X.format('concat_'))
+  #test_names = dir_util.clean_features_paths02(istest=True, lattice=C.lattices[0], temp=1100)
+  #X2    = np.loadtxt(test_names.X.format('concat_'))
+  #X = np.row_stack((X1,X2))
+  #y = np.loadtxt(dir_util.clean_features_paths02(istest=True, pseudo=False, liq=False).y.format('concat_'))
+  #X = np.loadtxt(test_names.X.format('concat_'))
+  #X = X[y==C.lattices[0].y_label]
+  X    = np.loadtxt(test_names.X.format('concat_'))[:,:]
+  #liqX = X
+  liqX = np.loadtxt(liq_names.X.format('concat_'))[:,:]
+  #ps_X = np.loadtxt(ps_test_names.X.format('concat_'))[:,-4:]
+  #X    = np.loadtxt(test_names.X.format('concat_'))[:,-4:]
+  #liqX = np.loadtxt(liq_names.X.format('concat_'))[:,-4:]
 
   # Compute PCA from  and save first two components.
   pca = PCA()
@@ -31,7 +45,9 @@ def main():
   # Compute cummulative variance explained .
   var = pca.explained_variance_ratio_.cumsum()
   u = np.arange(1,len(var)+1)
-  np.savetxt(ps_paths.variance, np.transpose([u,var]), fmt='%2d %.5f', header='  n_components | explained variance (cummulative sum)')
+  np.savetxt(paths.variance, np.transpose([u,var]), fmt='%2d %.5f', header='  n_components | explained variance (cummulative sum)')
+  with open(paths.pca, 'wb') as f:
+    pk.dump(pca, f)
 
 if __name__=='__main__':
   main()

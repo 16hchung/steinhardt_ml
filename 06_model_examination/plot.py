@@ -19,6 +19,7 @@ if __name__=='__main__':
                 cnst.cat_svm_lin_ovr_path if 'f' == args.model else \
                 cnst.cat_svm_rbf_ovo_path if 'g' == args.model else \
                 cnst.cat_svm_lin_ovo_path if 'h' == args.model else \
+                cnst.cat_with_liq_perf_path if 'j' == args.model else \
                 ''
   fnames = dir_util.model_exam_paths06(model_path, baseline=args.baseline)
   hyperparam_fnames = dir_util.hyperparam_all_paths04(model_path)
@@ -39,14 +40,25 @@ if __name__=='__main__':
   for latt in cnst.lattices:
     df.loc[df.latt==latt.name, 'temp'] /= float(latt.T_m)
 
+  # TODO set flag
+  df = df.rename(columns={
+    'PTM_dflt': r'$PTM_{dflt}$',
+    'PTM': r'$PTM_{tuned}$',
+    'ML': 'LattSVM'
+  })
+  df = df[['latt', 'temp', r'$PTM_{dflt}$', r'$PTM_{tuned}$', 'LattSVM']]
+
   # plot for each lattice
   df.set_index('temp', inplace=True)
+
   for latt in cnst.lattices:
+    plt.rcParams.update({'font.size': 16, 'figure.autolayout': True})
     df.groupby('latt').get_group(latt.name).plot(legend=True)
     plt.axvline(x=1,ls='--', c='k', lw=1.0)
-    plt.title(latt.name.upper())
-    plt.xlabel('T/T_m')
+    plt.title(f'Test Accuracy for {latt.name.upper()}')
+    plt.xlabel(r'$T/T_m$')
     plt.ylabel('Accuracy')
+    #plt.tight_layout()
     plt.savefig(fnames.fig_tmplt.format(latt.name), dpi=300)
     plt.clf()
 

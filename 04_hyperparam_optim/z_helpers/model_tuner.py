@@ -18,6 +18,7 @@ class ModelTuner:
     self.concat_test = False
     self.use_pretrained = False
     self.train_concated = False
+    self.eval_liq = False
 
   def cmdline_main(self):
     from argparse import ArgumentParser
@@ -95,11 +96,11 @@ class ModelTuner:
     self.set_hyperparam()
     kargs = [X,y, self.model, self.model_params, self.ms_paths.model_tmplt.format(hyperprm_sffx=self.hyperprm_sffx), self.ms_paths.scores]
     if self.train_concated:
-      ms.compute.run_all_concated(*kargs)
+      ms.compute.run_all_concated(*kargs, eval_liq=self.eval_liq, baseline=self.baseline)
     elif self.concat_test:
-      ms.compute.run_concated(*kargs)
+      ms.compute.run_concated(*kargs, eval_liq=self.eval_liq)
     else:
-      ms.compute.run(*kargs)
+      ms.compute.run(*kargs, eval_liq=self.eval_liq)
 
   def ms_plot(self):
     if not self.train_concated:

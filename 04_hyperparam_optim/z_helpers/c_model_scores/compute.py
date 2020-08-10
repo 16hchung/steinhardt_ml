@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.utils import shuffle
+from tqdm import tqdm
 import joblib
 
 from util import dir_util
@@ -13,7 +14,7 @@ from util import calc
 ################################################################################
 # Train model.                                                                 #
 ################################################################################
-def run(X,y, model, model_params, model_path, scores_path, relbl_wrong_neigh=False):
+def run(X,y, model, model_params, model_path, scores_path, relbl_wrong_neigh=False, eval_liq=False):
   params = {'tol':1e-3,'max_iter':1000}
   params.update(model_params)
   
@@ -30,7 +31,7 @@ def run(X,y, model, model_params, model_path, scores_path, relbl_wrong_neigh=Fal
       y_valid = calc.relabel_wrong_neigh(y_valid, n_neigh)
     save_scores(clf, X_valid, y_valid, scores_path.format(n_neigh))
 
-def run_concated(X, y, model, model_params, model_path, scores_path):
+def run_concated(X, y, model, model_params, model_path, scores_path, eval_liq=False):
   params = {'tol':1e-3,'max_iter':1000}
   params.update(model_params)
   
@@ -48,7 +49,7 @@ def run_concated(X, y, model, model_params, model_path, scores_path):
   X_valid = np.concatenate(Xs_valid, axis=1)
   save_scores(clf, X_valid, y_valid, scores_path.format('all'))
 
-def run_all_concated(X, y, model, model_params, model_path, scores_path):
+def run_all_concated(X, y, model, model_params, model_path, scores_path, eval_liq=False, baseline=False):
   params = {'tol':1e-3,'max_iter':1000, 'verbose':True}
   params.update(model_params)
   
@@ -56,6 +57,8 @@ def run_all_concated(X, y, model, model_params, model_path, scores_path):
   n_train = 50000
   X = X[:n_train]
   y = y[:n_train]
+  
+  #X = X[:,150:] # TODO
   # Fit on train set.
   clf = model(**params)
   #clf = model(**model_params)
@@ -65,13 +68,15 @@ def run_all_concated(X, y, model, model_params, model_path, scores_path):
   n_test = 10000
   paths = dir_util.clean_features_paths02(istest=True)
   X_valid = np.loadtxt(paths.X.format('concat_'))
+  #X_valid = np.loadtxt(paths.X.format('concat_'))[:,150:] # TODO
   y_valid = np.loadtxt(paths.y.format('concat_'))
   # include liquid points
-  paths = dir_util.clean_features_paths02(istest=True, liq=True)
-  X_liq = np.loadtxt(paths.X.format('concat_'))
-  y_liq = np.full(len(X_liq), -1)
-  X_valid = np.row_stack([X_valid, X_liq])
-  y_valid = np.concatenate([y_valid, y_liq])
+  if eval_liq:
+    paths = dir_util.clean_features_paths02(istest=True, liq=True)
+    X_liq = np.loadtxt(paths.X.format('concat_'))
+    y_liq = np.full(len(X_liq), -1)
+    X_valid = np.row_stack([X_valid, X_liq])
+    y_valid = np.concatenate([y_valid, y_liq])
 
   # limit number of test points for overall accuracy
   X_valid, y_valid = shuffle(X_valid, y_valid)
@@ -79,17 +84,21 @@ def run_all_concated(X, y, model, model_params, model_path, scores_path):
   y_valid = y_valid[:n_test*len(cnst.lattices)]
   save_scores(clf, X_valid, y_valid, scores_path.format('cat_'))
 
-  #scores = {'latt': [], 'temp': [], 'ML': []}
-  #for latt in cnst.lattices:
-  #  for temp in range(latt.low_temp, latt.high_temp+latt.step_temp, latt.step_temp):
-  #    paths = dir_util.clean_features_paths02(istest=True, lattice=latt, temp=temp)
-  #    X_valid = shuffle(np.loadtxt(paths.X.format('concat_')))[:n_test]
-  #    y_valid = np.ones(X_valid.shape[0]) * latt.y_label
-  #    scores['latt'].append(latt.name)
-  #    scores['temp'].append(temp)
-  #    scores['ML'].append(clf.score(X_valid, y_valid))
-  #df = pd.DataFrame(data=scores)
-  #df.to_csv(scores_path.format('cat_byT_'), index=False)
+  #if not eval_liq:
+  if True:
+    ml_key = 'ML_baseline' if baseline else 'ML'
+    scores = {'latt': [], 'temp': [], ml_key: []}
+    for latt in tqdm(cnst.lattices):
+      for temp in tqdm(range(latt.low_temp, latt.high_temp+latt.step_temp, latt.step_temp)):
+        paths = dir_util.clean_features_paths02(istest=True, lattice=latt, temp=temp)
+        X_valid = shuffle(np.loadtxt(paths.X.format('concat_')))[:n_test, :]
+        #X_valid = shuffle(np.loadtxt(paths.X.format('concat_')))[:n_test, 150:]
+        y_valid = np.ones(X_valid.shape[0]) * latt.y_label
+        scores['latt'].append(latt.name)
+        scores['temp'].append(temp)
+        scores[ml_key].append(clf.score(X_valid, y_valid))
+    df = pd.DataFrame(data=scores)
+    df.to_csv(scores_path.format('cat_byT_'), index=False)
 
 
 ################################################################################

@@ -1,4 +1,4 @@
-Accuracy on validation set: 99.91
+Accuracy on validation set: 100.00
 
               precision    recall  f1-score   support
 
@@ -14,9 +14,9 @@ Accuracy on validation set: 99.91
 weighted avg       1.00      1.00      1.00     49998
 
 Confusion Matrix:
-[[8328    5    0    0    0    0]
- [   6 8325    2    0    0    0]
- [   1   27 8305    0    0    0]
- [   0    0    0 8332    1    0]
- [   0    0    0    2 8331    0]
+[[8333    0    0    0    0    0]
+ [   0 8333    0    0    0    0]
+ [   0    0 8333    0    0    0]
+ [   0    0    0 8333    0    0]
+ [   0    0    0    1 8332    0]
  [   0    0    0    0    0 8333]]

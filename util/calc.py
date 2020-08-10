@@ -74,12 +74,18 @@ def compute_steinhardt(data,l,N_neigh,one_by_one=False):
 # Compute Steinhardt parameter for all orders in l.
 def steinhardt(r,l):
   Q = zeros(len(l))
+  distances = norm(r, axis=1)
+  min_dist = distances.min()
+  #if len(r) >= 4:
+  sigma = 4 * distances.std()
   for i in range(len(l)):
     q = zeros(2*l[i]+1,dtype=complex)
     for v in r:
       phi = arctan2(v[1],v[0])
       theta = arccos(v[2]/norm(v))
-      q += sph_harm(arange(-l[i],l[i]+1),l[i],phi,theta)
+      scale = sqrt(2*pi*sigma**2) * scipy.stats.norm.pdf(norm(v), loc=min_dist, scale=sigma)
+      q += scale * sph_harm(arange(-l[i],l[i]+1),l[i],phi,theta)
+      #q += min_dist / norm(v) * sph_harm(arange(-l[i],l[i]+1),l[i],phi,theta)
     q /= r.shape[0]
     Q[i] = sqrt(real((4*pi/(2*l[i]+1)) * sum(q*conjugate(q))))
   return Q
@@ -87,15 +93,18 @@ def steinhardt(r,l):
 
 ################### RSF FUNCTIONS #####################################
 
-def compute_rsf(data, sigma=.5):
+def compute_rsf(data, n_rsf_per_mu=7, mu_step=.05):#, sigma=.2):
+  """NOTE: n_rsf_per_mu must be odd!"""
   # Setup useful variables.
   natoms = data.particles.count # Number of atoms.
-  N_rsf  = len(cnst.select_possible_n_neigh)
+  N_mus = len(cnst.select_possible_n_neigh)
+  N_rsf = N_mus * n_rsf_per_mu
   max_n_neigh = max(cnst.select_possible_n_neigh)
   rsf = zeros((natoms, N_rsf))
 
   # Find mus based on avg distance of each n_neighbor in select_possible_n_neigh
-  mus = zeros((natoms, N_rsf))
+  mus = zeros((natoms, N_mus))
+  sigmas = zeros((natoms, N_mus))
   near_finder = NearestNeighborFinder(max_n_neigh, data)
   for iatom in range(natoms):
     # get distances from each neighbor up till max n_neigh
@@ -104,10 +113,20 @@ def compute_rsf(data, sigma=.5):
       d_ij[i_neigh] = neigh.distance
     # get avg distance for each n_neigh
     for i_n_neigh, n_neigh in enumerate(cnst.select_possible_n_neigh):
-      mus[iatom,i_n_neigh] = mean(d_ij[:n_neigh])
+      mus[iatom,i_n_neigh] = mean(d_ij[:n_neigh]) # TODO maybe do second shell for 16 neigh
+      #sigmas[iatom, i_n_neigh] = .05 * mus[iatom, i_n_neigh] #np.std(d_ij[:n_neigh]) * .25
+    sigmas[iatom] = .05*mus[iatom,0]
+
+  # expand mus to have n_rsf_per_mu around center
+  full_mus = []
+  start = int(n_rsf_per_mu / 2 * -1) # eg if 5, want range to be -2, -1, 0, 1, 2
+  end = int(n_rsf_per_mu / 2) + 1
+  for mu_incr in np.linspace(start*mu_step, end*mu_step, n_rsf_per_mu):
+    full_mus.append(mus + mus*mu_incr)
+  full_mus = np.hstack(full_mus)
 
   # r_cut should just be based on maximum mu
-  r_cut = np.max(mus) + 2*sigma
+  r_cut = np.max(full_mus) + 4*np.max(sigmas)
 
   # Computes atoms' neighbor lists for rsf computation
   cut_finder = CutoffNeighborFinder(cutoff=r_cut, data_collection=data)
@@ -124,6 +143,7 @@ def compute_rsf(data, sigma=.5):
       d_ij[i_neigh] = neigh.distance
     # Compute RSF.
     for i in range(N_rsf):
-      rsf[iatom,i] = sqrt(2*pi*sigma**2) * sum(scipy.stats.norm.pdf(d_ij,loc=mus[iatom,i],scale=sigma))
+      sigma = sigmas[iatom, i%N_mus]
+      rsf[iatom,i] = sqrt(2*pi*sigma**2) * sum(scipy.stats.norm.pdf(d_ij,loc=full_mus[iatom,i],scale=sigma))
 
   return rsf

@@ -85,6 +85,8 @@ class ClassifierWithPerfDist:
     for latt in tqdm(cnst.lattices):
       perf = perf_features[latt.name]
       y_latt = y[y==latt.y_label]
+      if not len(y_latt):
+        continue
       X_latt = X[y==latt.y_label][:]
       cutoff = self.latt_to_cut[latt.name]
       dist = np.linalg.norm(X_latt - perf, axis=-1) \

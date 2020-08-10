@@ -14,6 +14,7 @@ class ModelTunerJ(ModelTuner):
     super().__init__(ClassifierWithPerfDist, model_args, cnst.cat_with_liq_perf_path)
     self.hyperprm_sffx = ''
     self.train_concated = True
+    self.eval_liq = True
 
   def load_data(self):
     if self.baseline: 
@@ -27,9 +28,9 @@ class ModelTunerJ(ModelTuner):
   def set_hyperparam(self):
     self.model_params['C'] = 10
     self.model_params['gamma'] = .01
-    self.model_params['percentile'] = 99
+    self.model_params['percentile'] = 90
     self.model_params['n_stdevs'] = None
-    self.hyperprm_sffx = '_correct_scaler_C10_g.01_99perc_euccos'
+    self.hyperprm_sffx = '_rsf_C10_g.01_90perc_euccos'
 
 if __name__=='__main__':
   tuner = ModelTunerJ()

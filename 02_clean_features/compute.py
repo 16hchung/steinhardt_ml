@@ -11,15 +11,18 @@ from util import constants as cnst
 
 n_test_pts = 10000
 n_train_pts = 50000
-N_keep = int(n_train_pts / len(cnst.lattices))
+N_keep =int(n_train_pts / len(cnst.lattices))
+use_rsf = None
 
 # Load features and balance classes.
-def load_and_balance(pseudo, n_neigh=None, liq=False):
+def load_and_balance(pseudo, n_neigh=None, liq=False, rsf=None):
   Xs = {}
   for latt in cnst.lattices:
     # default is to use pseudo data
     neigh = latt.n_neigh if n_neigh == None else n_neigh
-    Xs[latt] = np.loadtxt(dir_util.all_features_path01(latt, pseudo=pseudo, liq=liq).format(neigh))
+    Xs[latt] = np.loadtxt(
+        dir_util.all_features_path01(latt, pseudo=pseudo, liq=liq, rsf=rsf).format('sel' if rsf else neigh)
+    )
   np_rnd.seed(0)
   #N_min = min([x.shape[0] for x in Xs.values()])
   Xs = {l:shuffle(x)[:N_keep] for l,x in Xs.items()}
@@ -46,15 +49,18 @@ def scale_data(X, n_neigh, fnames, scaler=None):
   X = scaler.transform(X)
   return scaler, X
 
-def process_n_neigh(fnames, pseudo, n_neigh=None, latt=None, temp=None, liq=False): # if default: generate pseudo/adaptive training 
+def process_col(fnames, pseudo, n_neigh=None, latt=None, temp=None, liq=False, rsf=None): # if default: generate pseudo/adaptive training 
   if latt==None or temp==None or pseudo:
-    Xs = load_and_balance(pseudo, n_neigh, liq=liq)
+    Xs = load_and_balance(pseudo, n_neigh, liq=liq, rsf=rsf)
     ys = make_labels(Xs)
     X, y = combine_lattices_data(Xs, ys)
   else:
-    X = np.loadtxt(dir_util.all_features_path01(latt, pseudo=pseudo, temp=temp).format(n_neigh))
+    X = np.loadtxt(
+        dir_util.all_features_path01(latt, pseudo=pseudo, temp=temp, rsf=rsf).format('sel' if rsf else n_neigh)
+    )
     X = X[:N_keep]
-    y = np.ones(N_keep) * latt.y_label
+    y = np.ones(len(X)) * latt.y_label
+    #y = np.ones(N_keep) * latt.y_label
   return X, y
 
 def shuffle_all_and_save(Xs, ys, fnames, n_neighs, scaler=None, concat=False, save_y=True):
@@ -89,11 +95,15 @@ def process_set(fnames, pseudo=False, scaler=None, scaler_path=None, concat=Fals
   Xs = []
   ys = []
   for neigh in cnst.possible_n_neigh:
-    X, y = process_n_neigh(fnames, pseudo, neigh, latt, temp, liq=liq)
+    X, y = process_col(fnames, pseudo, neigh, latt, temp, liq=liq)
 
     incorrect_labels = [lbl for lbl, latt in cnst.lbl_to_latt.items() if latt.n_neigh != neigh]
     y[np.isin(y, incorrect_labels)] *= -1
 
+    Xs.append(X)
+    ys.append(y)
+  if use_rsf:
+    X, y = process_col(fnames, pseudo, None, latt, temp, liq=liq, rsf=use_rsf)
     Xs.append(X)
     ys.append(y)
   if scaler == None and scaler_path != None:
@@ -113,11 +123,15 @@ def process_perf(scaler, latt):
   np.savetxt(scaled_fname, X, fmt='%.10e')
 
 def main():
+  global use_rsf
   import argparse
   parser = argparse.ArgumentParser()
   parser.add_argument('--cat', action='store_true')
   parser.add_argument('--part', default='p1')
+  parser.add_argument('--rsf', type=int, default=None)
   args = parser.parse_args()
+
+  use_rsf = args.rsf
 
   if args.part == 'p1':
     # do synth
@@ -136,7 +150,7 @@ def main():
     for latt in tqdm(cnst.lattices):
       for temp in range(latt.low_temp, latt.high_temp+latt.step_temp, latt.step_temp):
         fnames = dir_util.clean_features_paths02(istest=True, lattice=latt, temp=temp)
-        process_set(fnames, pseudo=False, scaler=scaler, concat=args.cat, latt=latt, temp=temp)
+        out = process_set(fnames, pseudo=False, scaler=scaler, concat=args.cat, latt=latt, temp=temp)
   if args.part == 'liq':
     print('processing liq test data')
     scaler = joblib.load(dir_util.scaler_path02(pseudo=True).format('all_'))

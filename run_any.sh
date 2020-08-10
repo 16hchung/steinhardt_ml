@@ -10,8 +10,8 @@ sbatch <<EOT
 #SBATCH --job-name="_"$1"_"
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=$2
-#SBATCH --time=7-00:00:00
 #SBATCH --nodes=1
+#SBATCH --time=2-00:00:00
 
 # Modules for Ovito.
 ml --force purge

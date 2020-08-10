@@ -30,20 +30,20 @@ cat_with_liq_perf_path = 'j_cat_with_liq_perf/'
 
 ######### CRYSTAL STRUCTURES ########
 
-Lattice= namedtuple('CrystalStruct', 'name, sim_dir, T_m, low_temp, high_temp, step_temp, dflt_temp, y_label, n_neigh, pt_fmt, ps_pt_fmt, outlier_cut')
+Lattice= namedtuple('CrystalStruct', 'name, sim_dir, T_m, low_temp, high_temp, step_temp, dflt_temp, y_label, n_neigh, pt_fmt, ps_pt_fmt, outlier_cut, marker')
 
 lattices = [
-  Lattice(name='fcc', sim_dir='02_crystals/', T_m=933,  low_temp=100, high_temp=1100, step_temp=100, dflt_temp=900,  y_label=1, n_neigh=12, pt_fmt='ro', ps_pt_fmt='ko'     , outlier_cut=7.5),
-  Lattice(name='hcp', sim_dir='02_crystals/', T_m=1941, low_temp=100, high_temp=2200, step_temp=100, dflt_temp=1500, y_label=2, n_neigh=12, pt_fmt='go', ps_pt_fmt='#6a0dad', outlier_cut=6.3),
-  Lattice(name='bcc', sim_dir='02_crystals/', T_m=1811, low_temp=100, high_temp=2000, step_temp=100, dflt_temp=1500, y_label=3, n_neigh=8 , pt_fmt='bo', ps_pt_fmt='#ff4500', outlier_cut=8.5),
-  Lattice(name='hd',  sim_dir='02_crystals/', T_m=273,  low_temp=20,  high_temp=340,  step_temp=20,  dflt_temp=220,  y_label=4, n_neigh=16, pt_fmt='mo', ps_pt_fmt='#ffb6c1', outlier_cut=6),
-  Lattice(name='cd',  sim_dir='02_crystals/', T_m=1687, low_temp=100, high_temp=2000, step_temp=100, dflt_temp=1500, y_label=5, n_neigh=16, pt_fmt='yo', ps_pt_fmt='#008080', outlier_cut=6),
-  Lattice(name='sc',  sim_dir='02_crystals/', T_m=1074, low_temp=100, high_temp=1200, step_temp=100, dflt_temp=500,  y_label=6, n_neigh=6,  pt_fmt='co', ps_pt_fmt='#800000', outlier_cut=9.5),
+  Lattice(name='fcc', sim_dir='02_crystals/', T_m=933,  low_temp=100, high_temp=1100, step_temp=100, dflt_temp=900,  y_label=1, n_neigh=12, pt_fmt='ro', ps_pt_fmt='ko'     , outlier_cut=7.5, marker='o'),
+  Lattice(name='hcp', sim_dir='02_crystals/', T_m=1941, low_temp=100, high_temp=2200, step_temp=100, dflt_temp=1500, y_label=2, n_neigh=12, pt_fmt='go', ps_pt_fmt='#6a0dad', outlier_cut=6.3, marker='D'),
+  Lattice(name='bcc', sim_dir='02_crystals/', T_m=1811, low_temp=100, high_temp=2000, step_temp=100, dflt_temp=1500, y_label=3, n_neigh=8 , pt_fmt='bo', ps_pt_fmt='#ff4500', outlier_cut=8.5, marker='p'),
+  Lattice(name='hd',  sim_dir='02_crystals/', T_m=273,  low_temp=20,  high_temp=340,  step_temp=20,  dflt_temp=220,  y_label=4, n_neigh=16, pt_fmt='mo', ps_pt_fmt='#ffb6c1', outlier_cut=6,   marker='X'),
+  Lattice(name='cd',  sim_dir='02_crystals/', T_m=1687, low_temp=100, high_temp=2000, step_temp=100, dflt_temp=1500, y_label=5, n_neigh=16, pt_fmt='yo', ps_pt_fmt='#008080', outlier_cut=6,   marker='v'),
+  Lattice(name='sc',  sim_dir='02_crystals/', T_m=1074, low_temp=100, high_temp=1200, step_temp=100, dflt_temp=500,  y_label=6, n_neigh=6,  pt_fmt='co', ps_pt_fmt='#800000', outlier_cut=9.5, marker='s'),
   #Lattice(name='liq', sim_dir='03_liquid/',   cna_mod_type=0, n_neigh=None)#int(CNAModifier.Type.OTHER))
 ]
 
 select_possible_n_neigh = list(np.sort(list(set([l.n_neigh for l in lattices]))))
-possible_n_neigh = list(range(1, 17))
+possible_n_neigh = list(range(2, 17))
 
 str_to_latt = {
   'fcc': lattices[0],
